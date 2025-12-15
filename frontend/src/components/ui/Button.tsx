@@ -28,7 +28,9 @@ const Button = ({
           ? "solid"
           : variant === "outlined"
           ? "outlined"
-          : "soft"
+          : variant === "soft"
+          ? "soft"
+          : "plain"
       }
       sx={
         {

@@ -18,7 +18,7 @@ const PageContainer = ({ children, sx, gap = 2 }: Props) => {
         justifyContent: "center",
         flexDirection: "column",
         overflow: "hidden",
-        paddingY: { xs: 2, md: 4 },
+        paddingY: { xs: 1, md: 4 },
         ...sx,
       }}
     >

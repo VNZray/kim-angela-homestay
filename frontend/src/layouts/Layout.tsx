@@ -1,16 +1,9 @@
-import React from "react";
-import { Link, Outlet, useLocation } from "react-router-dom";
-import {
-  Sheet,
-  Typography,
-  useColorScheme,
-  Button,
-  Box,
-  IconButton,
-  Avatar,
-} from "@mui/joy";
+import Header from "@/components/Header";
 import DarkMode from "@mui/icons-material/DarkMode";
 import LightMode from "@mui/icons-material/LightMode";
+import { Box, IconButton, Sheet, Typography, useColorScheme } from "@mui/joy";
+import React from "react";
+import { Outlet, useLocation } from "react-router-dom";
 
 // Mode Toggle Component
 function ModeToggle() {
@@ -46,65 +39,13 @@ export default function Layout() {
         bgcolor: "background.body",
       }}
     >
-      {/* Navigation Bar */}
-      <Sheet
-        component="nav"
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          p: 2,
-          borderBottom: "1px solid",
-          borderColor: "divider",
-          position: "sticky",
-          top: 0,
-          zIndex: 1000,
-          bgcolor: "background.surface",
-        }}
-      >
-        <Typography
-          level="h4"
-          component={Link}
-          to="/"
-          sx={{ textDecoration: "none", color: "text.primary" }}
-        >
-          RC
-        </Typography>
-
-        <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
-          {["Home", "Projects", "About"].map((item) => (
-            <Button
-              key={item}
-              component={Link}
-              to={item === "Home" ? "/" : `/${item.toLowerCase()}`}
-              variant={
-                location.pathname ===
-                (item === "Home" ? "/" : `/${item.toLowerCase()}`)
-                  ? "soft"
-                  : "plain"
-              }
-              color="neutral"
-            >
-              {item}
-            </Button>
-          ))}
-          <Button>Login</Button>
-          <ModeToggle />
-          <IconButton sx={{ borderRadius: "50%", padding: 0 }}>
-            <Avatar color="warning" variant="solid">
-              RC
-            </Avatar>
-          </IconButton>
-        </Box>
-      </Sheet>
+      <Header />
 
       {/* Main Content Area */}
       <Box
         component="main"
         sx={{
           flexGrow: 1,
-          p: 3,
-          maxWidth: "1200px",
           mx: "auto",
           width: "100%",
         }}

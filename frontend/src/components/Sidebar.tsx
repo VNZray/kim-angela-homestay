@@ -12,7 +12,7 @@ import {
   Avatar,
   Tooltip,
 } from "@mui/joy";
-
+import { colors } from "@/utils/Colors";
 // Icons
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import ApprovalIcon from "@mui/icons-material/FactCheck";
@@ -307,7 +307,7 @@ export default function Sidebar({
         gap: 2,
         borderRight: "1px solid",
         borderColor: "divider",
-        bgcolor: "#0A1B47",
+        bgcolor: colors.secondary,
       }}
     >
       {/* 1. Header */}
@@ -368,7 +368,7 @@ export default function Sidebar({
                       display: isCollapsed ? "none" : "block",
                     }}
                   >
-                    <Typography level="title-sm">{item.title}</Typography>
+                    <Typography level="title-md">{item.title}</Typography>
                   </ListItemContent>
                   {!isCollapsed && (
                     <KeyboardArrowDown
@@ -408,7 +408,7 @@ export default function Sidebar({
                         display: isCollapsed ? "none" : "block",
                       }}
                     >
-                      <Typography level="title-sm">{item.title}</Typography>
+                      <Typography level="title-md">{item.title}</Typography>
                     </ListItemContent>
                   </ListItemButton>
                 </Tooltip>
@@ -465,7 +465,7 @@ export default function Sidebar({
                     display: isCollapsed ? "none" : "block",
                   }}
                 >
-                  <Typography level="title-sm">Logout</Typography>
+                  <Typography level="title-md">Logout</Typography>
                 </ListItemContent>
               </ListItemButton>
             </Tooltip>
