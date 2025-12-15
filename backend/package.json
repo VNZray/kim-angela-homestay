@@ -1,0 +1,33 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "Boilerplate backend using Express and Prisma",
+  "main": "index.ts",
+  "scripts": {
+    "prod": "tsx index.ts",
+    "dev": "tsx watch index.ts",
+    "generate": "npx prisma generate",
+    "migrate": "npx prisma migrate dev",
+    "reset": "npx prisma migrate reset --force",
+    "studio": "npx prisma studio"
+  },
+  "keywords": [],
+  "author": "Rayven Clores",
+  "license": "ISC",
+  "type": "module",
+  "devDependencies": {
+    "@types/express": "^5.0.5",
+    "@types/node": "^24.10.1",
+    "@types/uuid": "^10.0.0",
+    "prisma": "^7.0.0",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "@prisma/adapter-mariadb": "^7.0.0",
+    "@prisma/client": "^7.0.0",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "uuid": "^13.0.0"
+  }
+}

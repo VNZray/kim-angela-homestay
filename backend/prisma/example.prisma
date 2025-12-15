@@ -1,0 +1,216 @@
+// // ✅ 1. Basic Model with UUID
+// model Example {
+//   id   String @id @default(uuid()) @db.Char(36)
+//   name String
+// }
+
+// // ✅ 2. Common Field Types
+// model CommonTypes {
+//   id        String   @id @default(uuid()) @db.Char(36)
+//   name      String   @db.VarChar(120)
+//   age       Int
+//   price     Float
+//   rating    Decimal? @db.Decimal(10, 2)
+//   isActive  Boolean  @default(true)
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
+//   metadata  Json?
+// }
+
+// // ✅ 3. Enum Example
+// enum Role {
+//   ADMIN
+//   OWNER
+//   USER
+// }
+
+// model Account {
+//   id    String @id @default(uuid()) @db.Char(36)
+//   email String @unique
+//   role  Role   @default(USER)
+// }
+
+// // (You already have this, but here is a complete example)
+// model User {
+//   id    String @id @default(uuid()) @db.Char(36)
+//   email String @unique
+//   posts Post[]
+// }
+
+// model Post {
+//   id       String @id @default(uuid()) @db.Char(36)
+//   title    String
+//   userId   String
+//   user     User   @relation(fields: [userId], references: [id])
+// }
+
+
+// // ✅ 5. One-to-One Relation
+// model User {
+//   id       String  @id @default(uuid()) @db.Char(36)
+//   email    String  @unique
+//   profile  Profile?
+// }
+
+// model Profile {
+//   id     String @id @default(uuid()) @db.Char(36)
+//   bio    String?
+//   userId String @unique
+//   user   User   @relation(fields: [userId], references: [id])
+// }
+
+// // ✅ 6. Many-to-Many Relation (Prisma-style)
+// model Student {
+//   id     String    @id @default(uuid()) @db.Char(36)
+//   name   String
+//   courses Course[]
+// }
+
+// model Course {
+//   id      String     @id @default(uuid()) @db.Char(36)
+//   title   String
+//   students Student[]
+// }
+
+// // ✅ 7. Many-to-Many with Custom Join Table
+// model User {
+//   id       String       @id @default(uuid()) @db.Char(36)
+//   name     String
+//   roles    UserRole[]
+// }
+
+// model Role {
+//   id     String      @id @default(uuid()) @db.Char(36)
+//   name   String
+//   users  UserRole[]
+// }
+
+// model UserRole {
+//   id     String @id @default(uuid()) @db.Char(36)
+
+//   userId String
+//   roleId String
+
+//   user   User @relation(fields: [userId], references: [id])
+//   role   Role @relation(fields: [roleId], references: [id])
+
+//   @@unique([userId, roleId])
+// }
+
+// //✅ 8. Soft Delete Pattern
+// model Product {
+//   id        String   @id @default(uuid()) @db.Char(36)
+//   name      String
+//   price     Decimal @db.Decimal(10,2)
+//   deletedAt DateTime?
+// }
+
+// // ✅ 9. Default Values
+// model Settings {
+//   id      String @id @default(uuid()) @db.Char(36)
+//   theme   String @default("light")
+//   counter Int    @default(0)
+// }
+
+// // ✅ 10. Unique Index
+// model Employee {
+//   id        String @id @default(uuid()) @db.Char(36)
+//   email     String @unique
+//   username  String
+
+//   @@unique([email, username])
+// }
+
+// // ✅ 11. Regular Index
+// model Log {
+//   id        String   @id @default(uuid()) @db.Char(36)
+//   message   String
+//   createdAt DateTime @default(now())
+
+//   @@index([createdAt])
+// }
+
+// // ✅ 12. Cascading Deletes
+// model Category {
+//   id    String   @id @default(uuid()) @db.Char(36)
+//   name  String
+//   posts Post[]
+// }
+
+// model Post {
+//   id         String   @id @default(uuid()) @db.Char(36)
+//   title      String
+//   categoryId String
+//   category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+// }
+
+// // ✅ 13. Composite Fields (Prisma 5)
+// type Address {
+//   street  String
+//   city    String
+//   zipCode String
+// }
+
+// model Customer {
+//   id      String  @id @default(uuid()) @db.Char(36)
+//   name    String
+//   address Address
+// }
+
+// // ✅ 14. Example Full Real-World Schema
+// enum UserType {
+//   TOURIST
+//   OWNER
+//   ADMIN
+// }
+
+// model User {
+//   id         String     @id @default(uuid()) @db.Char(36)
+//   email      String     @unique @db.VarChar(120)
+//   password   String     @db.VarChar(120)
+//   fullName   String     @db.VarChar(120)
+//   userType   UserType   @default(TOURIST)
+//   createdAt  DateTime   @default(now())
+//   updatedAt  DateTime   @updatedAt
+
+//   bookings   Booking[]
+//   reviews    Review[]
+// }
+
+// model Accommodation {
+//   id         String    @id @default(uuid()) @db.Char(36)
+//   name       String    @db.VarChar(120)
+//   address    String?
+//   ownerId    String
+//   owner      User      @relation(fields: [ownerId], references: [id])
+//   rooms      Room[]
+// }
+
+// model Room {
+//   id                String     @id @default(uuid()) @db.Char(36)
+//   name              String
+//   price             Decimal    @db.Decimal(10,2)
+//   accommodationId   String
+//   accommodation     Accommodation @relation(fields: [accommodationId], references: [id])
+//   bookings          Booking[]
+// }
+
+// model Booking {
+//   id        String   @id @default(uuid()) @db.Char(36)
+//   userId    String
+//   roomId    String
+//   startDate DateTime
+//   endDate   DateTime
+//   status    String   @default("pending")
+
+//   user      User @relation(fields: [userId], references: [id])
+//   room      Room @relation(fields: [roomId], references: [id])
+// }
+
+// model Review {
+//   id        String   @id @default(uuid()) @db.Char(36)
+//   userId    String
+//   content   String?  @db.Text
+
+//   user      User @relation(fields: [userId], references: [id])
+// }
