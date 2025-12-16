@@ -1,16 +1,19 @@
-import { AspectRatio, Box, Grid } from "@mui/joy";
+import { AspectRatio, Box, Grid, useColorScheme } from "@mui/joy";
 import Typography from "../ui/Typography";
 import Button from "../ui/Button";
 import HeroImage from "@/assets/kim-angela-hero.jpg";
 import Container from "../Container";
 import { CalendarMonth, Phone, ArrowForward, Star } from "@mui/icons-material";
-import { colors } from "@/utils/Colors";
+import { getColors } from "@/utils/Colors";
 
 /**
  * Hero Section Component
  * Full-screen landing section with engaging text, CTAs, and hero image
  */
 const Hero = () => {
+  const { mode } = useColorScheme();
+  const themeColors = getColors(mode);
+
   return (
     <Box
       sx={{
@@ -34,7 +37,7 @@ const Hero = () => {
           width: { xs: "150px", md: "250px" },
           height: { xs: "150px", md: "250px" },
           borderRadius: "50%",
-          background: colors.secondary,
+          background: themeColors.secondary,
           opacity: 0.2,
           animation: "pulse 4s ease-in-out infinite",
           zIndex: 0,
@@ -50,131 +53,6 @@ const Hero = () => {
           },
         }}
       />
-
-      {/* Wave Effect */}
-      <Box
-        sx={{
-          position: "absolute",
-          bottom: 0,
-          left: 0,
-          right: 0,
-          height: "200px",
-          zIndex: 0,
-          overflow: "hidden",
-        }}
-      >
-        {/* Wave Layer 1 - Darkest */}
-        <Box
-          sx={{
-            position: "absolute",
-            bottom: 0,
-            left: 0,
-            width: "200%",
-            height: "100%",
-            animation: "wave 15s linear infinite",
-            "@keyframes wave": {
-              "0%": { transform: "translateX(0)" },
-              "100%": { transform: "translateX(-50%)" },
-            },
-          }}
-        >
-          <svg
-            viewBox="0 0 1200 120"
-            preserveAspectRatio="none"
-            style={{
-              width: "100%",
-              height: "100%",
-            }}
-          >
-            <path
-              d="M0,60 C200,90 400,30 600,60 C800,90 1000,30 1200,60 L1200,120 L0,120 Z"
-              fill={colors.primary}
-              opacity="0.9"
-            />
-          </svg>
-        </Box>
-
-        {/* Wave Layer 2 - Medium */}
-        <Box
-          sx={{
-            position: "absolute",
-            bottom: 0,
-            left: 0,
-            width: "200%",
-            height: "90%",
-            animation: "wave 12s linear infinite reverse",
-          }}
-        >
-          <svg
-            viewBox="0 0 1200 120"
-            preserveAspectRatio="none"
-            style={{
-              width: "100%",
-              height: "100%",
-            }}
-          >
-            <path
-              d="M0,40 C200,70 400,10 600,40 C800,70 1000,10 1200,40 L1200,120 L0,120 Z"
-              fill={colors.primary}
-              opacity="0.7"
-            />
-          </svg>
-        </Box>
-
-        {/* Wave Layer 3 - Light */}
-        <Box
-          sx={{
-            position: "absolute",
-            bottom: 0,
-            left: 0,
-            width: "200%",
-            height: "80%",
-            animation: "wave 18s linear infinite",
-          }}
-        >
-          <svg
-            viewBox="0 0 1200 120"
-            preserveAspectRatio="none"
-            style={{
-              width: "100%",
-              height: "100%",
-            }}
-          >
-            <path
-              d="M0,50 C200,80 400,20 600,50 C800,80 1000,20 1200,50 L1200,120 L0,120 Z"
-              fill={colors.primary}
-              opacity="0.6"
-            />
-          </svg>
-        </Box>
-
-        {/* Wave Layer 4 - Lightest */}
-        <Box
-          sx={{
-            position: "absolute",
-            bottom: 0,
-            left: 0,
-            width: "200%",
-            height: "70%",
-            animation: "wave 10s linear infinite reverse",
-          }}
-        >
-          <svg
-            viewBox="0 0 1200 120"
-            preserveAspectRatio="none"
-            style={{
-              width: "100%",
-              height: "100%",
-            }}
-          >
-            <path
-              d="M0,30 C200,60 400,0 600,30 C800,60 1000,0 1200,30 L1200,120 L0,120 Z"
-              fill={colors.primary}
-              opacity="0.5"
-            />
-          </svg>
-        </Box>
-      </Box>
 
       <Grid
         container
@@ -336,7 +214,7 @@ const Hero = () => {
                 right: { xs: "-20px", md: "-80px" },
                 width: { xs: "500px", md: "900px" },
                 height: { xs: "400px", md: "700px" },
-                bgcolor: colors.primary,
+                bgcolor: themeColors.primary,
                 borderRadius: "50% 50% 30% 70% / 60% 40% 60% 40%",
                 opacity: 0.15,
                 zIndex: 0,

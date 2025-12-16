@@ -16,11 +16,10 @@ const SectionHeader = ({ title, subtitle }: props) => {
         zIndex: 1,
       }}
     >
-      <Typography.Header color="white" align="center" size="md" sx={{ mb: 2 }}>
+      <Typography.Header align="center" size="md" sx={{ mb: 2 }}>
         {title}
       </Typography.Header>
       <Typography.Body
-        color="white"
         align="center"
         size="md"
         sx={{ maxWidth: "600px", mx: "auto", opacity: 0.8 }}

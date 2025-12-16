@@ -1,4 +1,4 @@
-import { Box, Grid } from "@mui/joy";
+import { Box, Grid, useColorScheme } from "@mui/joy";
 import {
   Hotel,
   DirectionsBoat,
@@ -7,9 +7,10 @@ import {
 } from "@mui/icons-material";
 import Typography from "../ui/Typography";
 import Container from "../Container";
-import { colors } from "@/utils/Colors";
+import { getColors } from "@/utils/Colors";
 import SectionHeader from "../SectionHeader";
 import Card from "../ui/Card";
+import Button from "../ui/Button";
 
 /**
  * Value Proposition Section
@@ -17,30 +18,32 @@ import Card from "../ui/Card";
  * with icons and descriptions in a grid layout
  */
 const ValueProposition = () => {
+  const { mode } = useColorScheme();
+  const themeColors = getColors(mode);
   const values = [
     {
-      icon: <Hotel sx={{ fontSize: { xs: 40, md: 48 } }} />,
+      icon: <Hotel sx={{ fontSize: { xs: 60, md: 60 } }} />,
       title: "Comfortable Rooms",
       description:
         "We offer a tantalizing variety of room types to cater to your unique preferences",
-      iconBg: "rgba(218, 80, 25, 0.08)",
-      iconColor: colors.primary,
+      iconBg: themeColors.info + "20",
+      iconColor: themeColors.primary,
     },
     {
-      icon: <DirectionsBoat sx={{ fontSize: { xs: 40, md: 48 } }} />,
+      icon: <DirectionsBoat sx={{ fontSize: { xs: 60, md: 60 } }} />,
       title: "Island Hopping Tours",
       description:
-        "We take pride in sourcing and offering the finest quality tours from around the world",
-      iconBg: "rgba(218, 80, 25, 0.08)",
-      iconColor: colors.primary,
+        "Explore the stunning islands of Caramoan with our guided tours",
+      iconBg: themeColors.success + "20",
+      iconColor: themeColors.primary,
     },
     {
-      icon: <Restaurant sx={{ fontSize: { xs: 40, md: 48 } }} />,
-      title: "Authentic Dining",
+      icon: <Restaurant sx={{ fontSize: { xs: 60, md: 60 } }} />,
+      title: "Food & Dining",
       description:
-        "We offer a variety of dining options to satisfy your cravings",
-      iconBg: "rgba(218, 80, 25, 0.08)",
-      iconColor: colors.primary,
+        "We offer delicious sea food and local cuisine to satisfy your taste buds",
+      iconBg: themeColors.warning + "20",
+      iconColor: themeColors.primary,
     },
   ];
 
@@ -49,7 +52,6 @@ const ValueProposition = () => {
       component="section"
       sx={{
         py: { xs: 8, md: 12 },
-        bgcolor: colors.primary,
         position: "relative",
         overflow: "hidden",
         px: { xs: 2, md: 0 },
@@ -84,7 +86,7 @@ const ValueProposition = () => {
       <Container padding="0" align="center">
         <SectionHeader
           title="Why Stay With Us?"
-          subtitle="Experience the perfect blend of comfort, adventure, and authentic Filipino hospitality"
+          subtitle="Experience the perfect blend of comfort and adventure in Caramoan"
         />
         {/* Value Grid */}
         <Grid
@@ -101,9 +103,27 @@ const ValueProposition = () => {
         >
           {values.map((value, index) => (
             <Grid key={index} xs={12} sm={6} md={4}>
-              <Card elevation={6} variant="solid" ColorScheme="secondary">
+              <Card
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "flex-start",
+                  gap: 2,
+                  py: { xs: 4, md: 8 },
+                  px: { xs: 2, md: 4 },
+                  paddingBottom: { xs: 4, md: 4 },
+                }}
+                variant="plain"
+                ColorScheme="primary"
+              >
+                <Container radius="50%" background={value.iconBg}>
+                  {value.icon}
+                </Container>
+
                 <Typography.Header>{value.title}</Typography.Header>
-                <Typography.Body>{value.description}</Typography.Body>
+                <Typography.Body size="md">{value.description}</Typography.Body>
+
+                <Button variant="outlined">Learn More</Button>
               </Card>
             </Grid>
           ))}
