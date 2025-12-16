@@ -14,32 +14,8 @@ import Footer from "../components/Footer";
  */
 export default function Home() {
   return (
-    <Box
-      sx={{
-        minHeight: "100vh",
-        bgcolor: "#fdfcfa",
-      }}
-    >
-      {/* Hero Section */}
+    <Box>
       <Hero />
-
-      {/* Value Proposition Section */}
-      <ValueProposition />
-
-      {/* Featured Rooms Section */}
-      <FeaturedRooms />
-
-      {/* Island Hopping Section */}
-      <IslandHopping />
-
-      {/* Dining & Packages Section */}
-      <DiningPackages />
-
-      {/* Amenities Section */}
-      <Amenities />
-
-      {/* Footer */}
-      <Footer />
     </Box>
   );
 }

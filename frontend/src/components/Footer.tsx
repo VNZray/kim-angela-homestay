@@ -45,15 +45,12 @@ const Footer = () => {
       sx={{
         bgcolor: "#1a1a1a",
         color: "#ffffff",
-        py: { xs: 6, md: 8 },
+        p: { xs: 2, md: 2 },
+        pt: { xs: 4, md: 6 },
       }}
     >
-      <Container>
-        <Grid
-          container
-          spacing={{ xs: 4, md: 6 }}
-          sx={{ mb: { xs: 4, md: 6 } }}
-        >
+      <Container padding="0">
+        <Grid container sx={{ mb: { xs: 4, md: 6 } }}>
           {/* Column 1: About */}
           <Grid xs={12} sm={6} md={3}>
             <Typography.CardTitle size="md" color="light" sx={{ mb: 2 }}>
@@ -192,7 +189,7 @@ const Footer = () => {
         </Grid>
 
         {/* Divider */}
-        <Divider sx={{ my: 4, borderColor: "rgba(255, 255, 255, 0.1)" }} />
+        <Divider sx={{ borderColor: "rgba(255, 255, 255, 0.1)" }} />
 
         {/* Copyright */}
         <Box sx={{ textAlign: "center" }}>

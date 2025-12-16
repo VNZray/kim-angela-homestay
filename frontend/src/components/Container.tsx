@@ -133,7 +133,7 @@ const Container: React.FC<ContainerProps> = ({
         return {
           ...baseHoverStyles,
           // Uses the new prop here
-          boxShadow: `0 0 20px ${hoverGlowColor}`, 
+          boxShadow: `0 0 20px ${hoverGlowColor}`,
         };
       case "scale":
         return {
@@ -185,69 +185,69 @@ const Container: React.FC<ContainerProps> = ({
           from { opacity: 0; }
           to { opacity: 1; }
         }
-        
+
         @keyframes animation-slide-up {
-          from { 
+          from {
             opacity: 0;
             transform: translateY(30px);
           }
-          to { 
+          to {
             opacity: 1;
             transform: translateY(0);
           }
         }
-        
+
         @keyframes animation-slide-down {
-          from { 
+          from {
             opacity: 0;
             transform: translateY(-30px);
           }
-          to { 
+          to {
             opacity: 1;
             transform: translateY(0);
           }
         }
-        
+
         @keyframes animation-slide-left {
-          from { 
+          from {
             opacity: 0;
             transform: translateX(30px);
           }
-          to { 
+          to {
             opacity: 1;
             transform: translateX(0);
           }
         }
-        
+
         @keyframes animation-slide-right {
-          from { 
+          from {
             opacity: 0;
             transform: translateX(-30px);
           }
-          to { 
+          to {
             opacity: 1;
             transform: translateX(0);
           }
         }
-        
+
         @keyframes animation-zoom-in {
-          from { 
+          from {
             opacity: 0;
             transform: scale(0.8);
           }
-          to { 
+          to {
             opacity: 1;
             transform: scale(1);
           }
         }
-        
+
         @keyframes animation-bounce {
           0%, 100% { transform: translateY(0); }
           25% { transform: translateY(-10px); }
           50% { transform: translateY(0); }
           75% { transform: translateY(-5px); }
         }
-        
+
         @keyframes animation-pulse {
           0%, 100% { opacity: 1; }
           50% { opacity: 0.7; }

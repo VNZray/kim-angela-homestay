@@ -1,3 +1,4 @@
+import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import DarkMode from "@mui/icons-material/DarkMode";
 import LightMode from "@mui/icons-material/LightMode";
@@ -36,7 +37,6 @@ export default function Layout() {
         display: "flex",
         flexDirection: "column",
         minHeight: "100vh",
-        bgcolor: "background.body",
       }}
     >
       <Header />
@@ -46,28 +46,13 @@ export default function Layout() {
         component="main"
         sx={{
           flexGrow: 1,
-          mx: "auto",
-          width: "100%",
         }}
       >
         <Outlet />
       </Box>
 
       {/* Footer */}
-      <Sheet
-        component="footer"
-        sx={{
-          p: 2,
-          textAlign: "center",
-          borderTop: "1px solid",
-          borderColor: "divider",
-        }}
-      >
-        <Typography level="body-sm">
-          © {new Date().getFullYear()} Rayven Clores. Built with React & MUI Joy
-          UI.
-        </Typography>
-      </Sheet>
+      <Footer />
     </Sheet>
   );
 }

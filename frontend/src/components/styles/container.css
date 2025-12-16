@@ -1,7 +1,6 @@
 .container {
   background-color: var(--white);
   border-radius: 0.5rem;
-  padding: 1rem;
   transition: box-shadow 0.2s ease-in-out;
 }
 
