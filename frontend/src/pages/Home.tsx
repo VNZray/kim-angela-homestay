@@ -16,6 +16,7 @@ export default function Home() {
   return (
     <Box>
       <Hero />
+      <ValueProposition />
     </Box>
   );
 }

@@ -1,10 +1,10 @@
-import { Button as JoyButton } from "@mui/joy";
+import { Button as JoyButton, useColorScheme } from "@mui/joy";
 import type { ButtonProps as JoyButtonProps } from "@mui/joy";
 import type { CSSProperties } from "react";
-import { colors } from "@/utils/Colors";
+import { getColors } from "@/utils/Colors";
 import { getColorStyles } from "@/utils/buttonColorStyles";
 
-type ColorScheme = keyof typeof colors;
+type ColorScheme = keyof ReturnType<typeof getColors>;
 
 interface CustomButtonProps extends Omit<JoyButtonProps, "color" | "variant"> {
   variant?: "solid" | "outlined" | "soft" | "plain";
@@ -19,7 +19,9 @@ const Button = ({
   sx,
   ...props
 }: CustomButtonProps) => {
-  const buttonStyles = getColorStyles(colorScheme, variant);
+  const { mode } = useColorScheme();
+  const themeColors = getColors(mode);
+  const buttonStyles = getColorStyles(colorScheme, variant, themeColors);
 
   return (
     <JoyButton

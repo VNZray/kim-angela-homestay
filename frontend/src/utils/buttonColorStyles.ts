@@ -1,6 +1,6 @@
-import { colors } from './Colors';
+import { getColors } from './Colors';
 
-type ColorScheme = keyof typeof colors;
+type ColorScheme = keyof ReturnType<typeof getColors>;
 type Variant = 'solid' | 'outlined' | 'soft' | 'plain';
 
 /**
@@ -125,9 +125,14 @@ const getTextColor = (baseColor: string): string => {
  *
  * @param colorScheme - The color scheme from Colors.ts (e.g., 'primary', 'secondary')
  * @param variant - The button variant ('solid', 'outlined', 'soft', 'plain')
+ * @param colors - The theme colors object (optional, defaults to light mode)
  * @returns An object containing all CSS styles for the button
  */
-export const getColorStyles = (colorScheme: ColorScheme, variant: Variant) => {
+export const getColorStyles = (
+  colorScheme: ColorScheme,
+  variant: Variant,
+  colors: ReturnType<typeof getColors> = getColors("light")
+) => {
   // Step 1: Get the base color from the color palette
   const baseColor = colors[colorScheme];
 
@@ -227,7 +232,8 @@ export const getColorStyles = (colorScheme: ColorScheme, variant: Variant) => {
   }
 };
 
-/**
+/*const colors = getColors("light");
+  *
  * Gets all available color schemes from the colors palette
  * Filters out non-color properties and returns only valid color hex values
  */

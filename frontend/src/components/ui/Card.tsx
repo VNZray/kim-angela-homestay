@@ -1,10 +1,10 @@
 import { Card as JoyUICard } from "@mui/joy";
 import { useColorScheme, type CardProps as JoyCardProps } from "@mui/joy";
 import type { CSSProperties } from "react";
-import { colors } from "@/utils/Colors";
+import { getColors } from "@/utils/Colors";
 import { getColorStyles } from "@/utils/buttonColorStyles";
 
-type Color = keyof typeof colors;
+type Color = keyof ReturnType<typeof getColors>;
 type ElevationLevel = 1 | 2 | 3 | 4 | 5 | 6;
 
 // ☀️ Light Mode Shadows (Black/Dark shadows)
@@ -44,11 +44,13 @@ const Card = ({
   ...props
 }: CustomCardProps) => {
   const { mode } = useColorScheme();
-  const buttonStyles = getColorStyles(ColorScheme, variant);
+  const themeColors = getColors(mode);
+  const buttonStyles = getColorStyles(ColorScheme, variant, themeColors);
 
   // Select shadow set based on current mode
   // Default to light shadows if mode is undefined (server-side) or 'light'
-  const shadows = mode === "dark" ? darkElevationShadows : lightElevationShadows;
+  const shadows =
+    mode === "dark" ? darkElevationShadows : lightElevationShadows;
 
   const shadowStyle = elevation ? { boxShadow: shadows[elevation] } : {};
 

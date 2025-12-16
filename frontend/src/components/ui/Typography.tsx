@@ -1,7 +1,7 @@
 import { Typography as JoyTypography, useColorScheme } from "@mui/joy";
 import type { TypographyProps } from "@mui/joy";
 import type { CSSProperties, ReactNode } from "react";
-import { colors } from "@/utils/Colors";
+import { getColors } from "@/utils/Colors";
 
 // Type Definitions
 type TypographyVariant =
@@ -23,7 +23,9 @@ type TypographyColor =
   | "success"
   | "default"
   | "light"
-  | "dark";
+  | "dark"
+  | "white"
+  | "black";
 
 interface CustomTypographyProps
   extends Omit<
@@ -133,6 +135,7 @@ const getCombinedStyles = (
 // Color mapping with dark mode support
 const getColor = (color: TypographyColor): string => {
   const { mode } = useColorScheme();
+  const colors = getColors(mode);
 
   const colorMap = {
     primary: colors.primary,
@@ -141,9 +144,11 @@ const getColor = (color: TypographyColor): string => {
     warning: colors.warning,
     info: colors.info,
     success: colors.success,
-    default: mode === "dark" ? colors.white : colors.dark,
+    default: colors.dark,
     light: colors.white,
     dark: colors.dark,
+    white: mode === "dark" ? "#ffffff" : "#ffffff",
+    black: mode === "dark" ? "#1e1e1e" : "#1e1e1e",
   };
   return colorMap[color];
 };

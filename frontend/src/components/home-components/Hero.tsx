@@ -88,7 +88,7 @@ const Hero = () => {
           >
             <path
               d="M0,60 C200,90 400,30 600,60 C800,90 1000,30 1200,60 L1200,120 L0,120 Z"
-              fill="#2C3E50"
+              fill={colors.primary}
               opacity="0.9"
             />
           </svg>
@@ -115,7 +115,7 @@ const Hero = () => {
           >
             <path
               d="M0,40 C200,70 400,10 600,40 C800,70 1000,10 1200,40 L1200,120 L0,120 Z"
-              fill="#34495E"
+              fill={colors.primary}
               opacity="0.7"
             />
           </svg>
@@ -142,7 +142,7 @@ const Hero = () => {
           >
             <path
               d="M0,50 C200,80 400,20 600,50 C800,80 1000,20 1200,50 L1200,120 L0,120 Z"
-              fill="#4A6FA5"
+              fill={colors.primary}
               opacity="0.6"
             />
           </svg>
@@ -169,7 +169,7 @@ const Hero = () => {
           >
             <path
               d="M0,30 C200,60 400,0 600,30 C800,60 1000,0 1200,30 L1200,120 L0,120 Z"
-              fill="#5A8CC9"
+              fill={colors.primary}
               opacity="0.5"
             />
           </svg>
