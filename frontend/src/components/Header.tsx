@@ -79,7 +79,7 @@ const Header = () => {
             return (
               <Link key={item} to={to} style={{ textDecoration: "none" }}>
                 <Button
-                  variant={isActive ? "solid" : "plain"}
+                  variant={isActive ? "soft" : "plain"}
                   colorScheme={isActive ? "primary" : "primary"}
                 >
                   {item}
