@@ -1,9 +1,11 @@
-import { Box, Grid, AspectRatio } from "@mui/joy";
+import { Box, Grid, AspectRatio, useColorScheme } from "@mui/joy";
 import { People, Favorite } from "@mui/icons-material";
 import Typography from "../ui/Typography";
 import Card from "../ui/Card";
 import Button from "../ui/Button";
 import Container from "../Container";
+import SectionHeader from "../SectionHeader";
+import { getColors } from "@/utils/Colors";
 
 /**
  * Featured Rooms Section
@@ -11,6 +13,8 @@ import Container from "../Container";
  * Mobile: Horizontal scroll, Desktop: Grid layout
  */
 const FeaturedRooms = () => {
+  const { mode } = useColorScheme();
+  const themeColors = getColors(mode);
   const rooms = [
     {
       title: "Family Room",
@@ -53,39 +57,34 @@ const FeaturedRooms = () => {
       component="section"
       sx={{
         py: { xs: 8, md: 12 },
-        bgcolor: "#ffffff",
+        position: "relative",
+        overflow: "hidden",
+        px: { xs: 2, md: 0 },
+        bgcolor: themeColors.odd,
       }}
     >
-      <Container>
-        {/* Section Header */}
-        <Box sx={{ textAlign: "center", mb: { xs: 6, md: 8 } }}>
-          <Typography.Header size="md" color="dark" sx={{ mb: 2 }}>
-            Featured Rooms
-          </Typography.Header>
-          <Typography.Body
-            size="md"
-            color="default"
-            sx={{ maxWidth: "600px", mx: "auto", opacity: 0.8 }}
-          >
-            Choose from our carefully designed rooms that suit your needs
-          </Typography.Body>
-        </Box>
+      <Container padding="0" align="center">
+        <SectionHeader
+          title="Featured Rooms"
+          subtitle="Choose from our carefully designed rooms that suit your needs"
+        />
 
         {/* Rooms Grid */}
         <Grid
-          container
+          sm={12}
+          md={10}
+          lg={10}
           spacing={{ xs: 3, md: 4 }}
+          container
           sx={{
-            // Mobile: Enable horizontal scroll
-            overflowX: { xs: "auto", md: "visible" },
-            flexWrap: { xs: "nowrap", md: "wrap" },
+            justifyContent: "center",
+            position: "relative",
           }}
         >
           {rooms.map((room, index) => (
             <Grid key={index} xs={12} sm={6} md={4}>
               <Card
-                variant="soft"
-                ColorScheme="background"
+                colorScheme="light"
                 sx={{
                   height: "100%",
                   borderRadius: "lg",
@@ -185,7 +184,7 @@ const FeaturedRooms = () => {
 
         {/* View All Button */}
         <Box sx={{ textAlign: "center", mt: { xs: 6, md: 8 } }}>
-          <Button variant="outlined" colorScheme="secondary" sx={{ px: 6 }}>
+          <Button variant="outlined" colorScheme="primary" sx={{ px: 6 }}>
             View All Rooms
           </Button>
         </Box>

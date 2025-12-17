@@ -103,9 +103,9 @@ const Footer = () => {
             }}
           >
             <path
-              d="M0,40 C200,70 400,10 600,40 C800,70 1000,10 1200,40 L1200,120 L0,120 Z"
+              d="M0,40 C300,90 100,10 600,40 C800,70 100,10 1200,40 L1200,120 L0,120 Z"
               fill={themeColors.primary}
-              opacity="0.3"
+              opacity="0.5"
             />
           </svg>
         </Box>
@@ -131,7 +131,7 @@ const Footer = () => {
             <path
               d="M0,50 C200,80 400,20 600,50 C800,80 1000,20 1200,50 L1200,120 L0,120 Z"
               fill={themeColors.primary}
-              opacity="0.2"
+              opacity="0.3"
             />
           </svg>
         </Box>

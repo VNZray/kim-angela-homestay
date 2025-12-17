@@ -1,4 +1,4 @@
-import { getColors } from './Colors';
+import { colors, getColors } from './Colors';
 
 type ColorScheme = keyof ReturnType<typeof getColors>;
 type Variant = 'solid' | 'outlined' | 'soft' | 'plain';

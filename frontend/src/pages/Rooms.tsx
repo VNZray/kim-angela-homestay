@@ -11,11 +11,7 @@ export default function Rooms() {
   const themeColor = getColors(mode);
   return (
     <PageContainer>
-      <Container>
-        <Typography.Body color="dark">
-          This is the Rooms page. You can add content related to rooms here.
-        </Typography.Body>
-      </Container>
+      <Typography.Title>Rooms</Typography.Title>
     </PageContainer>
   );
 }

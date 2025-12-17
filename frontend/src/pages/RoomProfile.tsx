@@ -1,10 +1,11 @@
 import PageContainer from "@/components/PageContainer";
 import Typography from "@/components/ui/Typography";
 
-export default function Services() {
+export const RoomProfile = () => {
+  // const { mode } = useColorScheme();
   return (
     <PageContainer>
-      <Typography.Title>Services</Typography.Title>
+      <Typography.Title>Room Profile</Typography.Title>
     </PageContainer>
   );
-}
+};

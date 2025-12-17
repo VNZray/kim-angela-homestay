@@ -1,9 +1,11 @@
-import { Sheet } from '@mui/joy';
+import PageContainer from "@/components/PageContainer";
+import Typography from "@/components/ui/Typography";
+import { Sheet } from "@mui/joy";
 
 export default function About() {
   return (
-    <Sheet sx={{ maxWidth: 800, mx: 'auto', bgcolor: 'transparent' }}>
-    
-    </Sheet>
+    <PageContainer>
+      <Typography.Title>About</Typography.Title>
+    </PageContainer>
   );
 }

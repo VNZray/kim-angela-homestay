@@ -6,18 +6,7 @@ export const AccommodationDashboard = () => {
   // const { mode } = useColorScheme();
   return (
     <PageContainer>
-      <Typography.Title>Accommodation Business Dashboard</Typography.Title>
-      <Card ColorScheme="transparent" elevation={6}>
-        <Typography.Header>Accommodation Business Dashboard</Typography.Header>
-      </Card>
-      <Typography.CardTitle>
-        Accommodation Business Dashboard
-      </Typography.CardTitle>
-      <Typography.CardSubTitle>
-        Accommodation Business Dashboard
-      </Typography.CardSubTitle>
-      <Typography.Label>Accommodation Business Dashboard</Typography.Label>
-      <Typography.Body>Accommodation Business Dashboard</Typography.Body>
+      <Typography.Title>Accommodation Dashboard</Typography.Title>
     </PageContainer>
   );
 };

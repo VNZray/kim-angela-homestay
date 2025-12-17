@@ -1,6 +1,9 @@
 // src/components/Container.tsx
 import React from "react";
 import "./styles/container.css";
+import { getColors } from "@/utils/Colors";
+import { useColorScheme } from "@mui/joy";
+type Color = keyof ReturnType<typeof getColors>;
 
 interface ContainerProps {
   children: React.ReactNode;
@@ -26,16 +29,18 @@ interface ContainerProps {
   padding?: string;
   style?: React.CSSProperties;
   gap?: string;
-  background?: string;
+  background?: Color;
   direction?: "row" | "column";
   opacity?: number;
   flex?: number;
+
+  // Theme
 
   // Hover effects
   hover?: boolean;
   hoverEffect?: "lift" | "glow" | "scale" | "highlight" | "shadow-expand";
   hoverBackground?: string;
-  hoverGlowColor?: string; // <--- NEW PROP
+  hoverGlowColor?: Color;
   hoverScaleAmount?: number; // 0.95 to 1.1, default 1.05
   hoverDuration?: number; // in ms, default 300
 
@@ -84,7 +89,7 @@ const Container: React.FC<ContainerProps> = ({
   hover = false,
   hoverEffect = "lift",
   hoverBackground,
-  hoverGlowColor = "rgba(59, 130, 246, 0.5)", // <--- Default Blue
+  hoverGlowColor,
   hoverScaleAmount = 1.02,
   hoverDuration = 300,
   animation,
@@ -102,6 +107,8 @@ const Container: React.FC<ContainerProps> = ({
   flex,
 }) => {
   const [isHovered, setIsHovered] = React.useState(false);
+  const { mode } = useColorScheme();
+  const themeColors = getColors(mode);
 
   // Generate animation CSS
   const getAnimationCSS = (): React.CSSProperties => {
@@ -113,7 +120,7 @@ const Container: React.FC<ContainerProps> = ({
     };
   };
 
-  // Get hover styles based on hoverEffect
+  // Get hover styles based on hoverEffect with theme-aware backgrounds
   const getHoverStyles = (): React.CSSProperties => {
     if (!isHovered || !hover) return {};
 
@@ -122,34 +129,79 @@ const Container: React.FC<ContainerProps> = ({
       cursor,
     };
 
+    // Default theme-based hover backgrounds for each effect
+    const defaultHoverBackgrounds = {
+      lift:
+        mode === "dark" ? "rgba(0, 0, 0, 0.05)" : "rgba(255, 255, 255, 0.05)",
+      glow: "transparent",
+      scale:
+        mode === "dark" ? "rgba(0, 0, 0, 0.05)" : "rgba(255, 255, 255, 0.05)",
+      highlight:
+        mode === "dark" ? "rgba(0, 0, 0, 0.15)" : "rgba(255, 255, 255, 0.1)",
+      "shadow-expand":
+        mode === "dark" ? "rgba(0, 0, 0, 0.08)" : "rgba(255, 255, 255, 0.08)",
+    };
+
+    // Auto-complete glow color from theme
+    const getGlowColor = (): string => {
+      if (hoverGlowColor) {
+        const selectedColor = themeColors[hoverGlowColor];
+        return mode === "dark"
+          ? `0 0 20px ${selectedColor}CC, 0 0 40px ${selectedColor}66`
+          : `0 0 20px ${selectedColor}99, 0 0 30px ${selectedColor}4D`;
+      }
+      // Default glow uses primary color
+      return mode === "dark"
+        ? `0 0 20px ${themeColors.primary}CC, 0 0 40px ${themeColors.primary}66`
+        : `0 0 20px ${themeColors.primary}99, 0 0 30px ${themeColors.primary}4D`;
+    };
+
     switch (hoverEffect) {
       case "lift":
         return {
           ...baseHoverStyles,
           transform: "translateY(-8px)",
-          boxShadow: "0 0px 24px rgba(0, 0, 0, 0.25)",
+          boxShadow:
+            mode === "dark"
+              ? "0 8px 24px rgba(0, 0, 0, 0.5), 0 0 40px rgba(255, 255, 255, 0.2)"
+              : "0 8px 24px rgba(0, 0, 0, 0.15), 0 0 30px rgba(255, 255, 255, 0.15)",
+          backgroundColor: hoverBackground || defaultHoverBackgrounds.lift,
         };
       case "glow":
         return {
           ...baseHoverStyles,
-          // Uses the new prop here
-          boxShadow: `0 0 20px ${hoverGlowColor}`,
+          boxShadow: getGlowColor(),
+          backgroundColor: hoverBackground || defaultHoverBackgrounds.glow,
         };
       case "scale":
         return {
           ...baseHoverStyles,
           transform: `scale(${hoverScaleAmount})`,
+          backgroundColor: hoverBackground || defaultHoverBackgrounds.scale,
+          boxShadow:
+            mode === "dark"
+              ? "0 4px 20px rgba(0, 0, 0, 0.3)"
+              : "0 4px 20px rgba(0, 0, 0, 0.1)",
         };
       case "highlight":
         return {
           ...baseHoverStyles,
-          backgroundColor: hoverBackground,
+          backgroundColor: hoverBackground || defaultHoverBackgrounds.highlight,
+          boxShadow:
+            mode === "dark"
+              ? `0 0 0 2px ${themeColors.primary}40 inset`
+              : `0 0 0 2px ${themeColors.primary}30 inset`,
         };
       case "shadow-expand":
         return {
           ...baseHoverStyles,
-          boxShadow: "0 20px 40px rgba(0, 0, 0, 0.2)",
+          boxShadow:
+            mode === "dark"
+              ? `0 20px 50px rgba(0, 0, 0, 0.4), 0 0 40px ${themeColors.secondary}30`
+              : `0 20px 40px rgba(0, 0, 0, 0.15), 0 0 30px ${themeColors.secondary}20`,
           transform: "scale(1.02)",
+          backgroundColor:
+            hoverBackground || defaultHoverBackgrounds["shadow-expand"],
         };
       default:
         return baseHoverStyles;
@@ -163,7 +215,7 @@ const Container: React.FC<ContainerProps> = ({
     flex,
     borderRadius: radius,
     gap,
-    backgroundColor: background,
+    backgroundColor: themeColors[background] || background,
     flexDirection: direction,
     display: "flex",
     alignItems: align,

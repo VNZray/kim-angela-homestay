@@ -103,20 +103,8 @@ const ValueProposition = () => {
         >
           {values.map((value, index) => (
             <Grid key={index} xs={12} sm={6} md={4}>
-              <Card
-                sx={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "flex-start",
-                  gap: 2,
-                  py: { xs: 4, md: 8 },
-                  px: { xs: 2, md: 4 },
-                  paddingBottom: { xs: 4, md: 4 },
-                }}
-                variant="plain"
-                ColorScheme="primary"
-              >
-                <Container radius="50%" background={value.iconBg}>
+              <Container hover>
+                <Container radius="50%" background={"transparent"}>
                   {value.icon}
                 </Container>
 
@@ -124,7 +112,7 @@ const ValueProposition = () => {
                 <Typography.Body size="md">{value.description}</Typography.Body>
 
                 <Button variant="outlined">Learn More</Button>
-              </Card>
+              </Container>
             </Grid>
           ))}
         </Grid>

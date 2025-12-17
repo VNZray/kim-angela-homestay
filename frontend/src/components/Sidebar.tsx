@@ -307,7 +307,7 @@ export default function Sidebar({
         gap: 2,
         borderRight: "1px solid",
         borderColor: "divider",
-        bgcolor: colors.secondary,
+        bgcolor: colors.primary,
       }}
     >
       {/* 1. Header */}
@@ -326,7 +326,7 @@ export default function Sidebar({
             display: isCollapsed ? "none" : "block",
           }}
         >
-          City Ventures
+          Kim Angela Homestay
         </Typography>
         <IconButton
           onClick={closeMobileSidebar}

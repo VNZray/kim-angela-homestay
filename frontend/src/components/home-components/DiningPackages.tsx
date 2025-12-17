@@ -1,8 +1,10 @@
-import { Box, Grid, AspectRatio, Chip } from "@mui/joy";
+import { Box, Grid, AspectRatio, Chip, useColorScheme } from "@mui/joy";
 import Typography from "../ui/Typography";
 import Card from "../ui/Card";
 import Button from "../ui/Button";
 import Container from "../Container";
+import SectionHeader from "../SectionHeader";
+import { getColors } from "@/utils/Colors";
 
 /**
  * Dining & Packages Section
@@ -10,6 +12,8 @@ import Container from "../Container";
  * Uses soft primary color tint background to visually separate the section
  */
 const DiningPackages = () => {
+  const { mode } = useColorScheme();
+  const themeColors = getColors(mode);
   const packages = [
     {
       title: "Breakfast Package",
@@ -49,41 +53,41 @@ const DiningPackages = () => {
       component="section"
       sx={{
         py: { xs: 8, md: 12 },
-        bgcolor: "rgba(246, 211, 62, 0.08)", // Soft tint of primary color
+        position: "relative",
+        overflow: "hidden",
+        px: { xs: 2, md: 0 },
+        bgcolor: themeColors.odd,
       }}
     >
-      <Container>
-        {/* Section Header */}
-        <Box sx={{ textAlign: "center", mb: { xs: 6, md: 8 } }}>
-          <Typography.Header size="md" color="dark" sx={{ mb: 2 }}>
-            Dining & Packages
-          </Typography.Header>
-          <Typography.Body
-            size="md"
-            color="default"
-            sx={{ maxWidth: "600px", mx: "auto", opacity: 0.8 }}
-          >
-            Savor authentic Filipino cuisine and fresh seafood prepared by our
-            talented chefs
-          </Typography.Body>
-        </Box>
+      <Container padding="0" align="center">
+        <SectionHeader
+          title="Dining & Packages"
+          subtitle="Savor authentic Filipino cuisine and fresh seafood prepared by our talented chefs"
+        />
 
         {/* Packages Grid */}
-        <Grid container spacing={{ xs: 3, md: 4 }}>
+        <Grid
+          sm={12}
+          md={10}
+          lg={10}
+          spacing={{ xs: 3, md: 4 }}
+          container
+          sx={{
+            justifyContent: "center",
+            position: "relative",
+          }}
+        >
           {packages.map((pkg, index) => (
             <Grid key={index} xs={12} sm={6} md={4}>
               <Card
-                variant="soft"
-                ColorScheme="white"
+                colorScheme="light"
                 sx={{
                   height: "100%",
                   borderRadius: "lg",
-                  bgcolor: "#ffffff",
-                  position: "relative",
                   transition: "all 0.3s ease",
                   "&:hover": {
-                    transform: "translateY(-5px)",
-                    boxShadow: "0 12px 24px rgba(0, 0, 0, 0.12)",
+                    transform: "translateY(-8px)",
+                    boxShadow: "0 12px 24px rgba(0, 0, 0, 0.15)",
                   },
                 }}
               >

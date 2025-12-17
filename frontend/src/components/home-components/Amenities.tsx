@@ -1,4 +1,4 @@
-import { Box, Chip } from "@mui/joy";
+import { Box, Grid } from "@mui/joy";
 import {
   Wifi,
   AcUnit,
@@ -11,6 +11,8 @@ import {
 } from "@mui/icons-material";
 import Typography from "../ui/Typography";
 import Container from "../Container";
+import SectionHeader from "../SectionHeader";
+import Card from "../ui/Card";
 
 /**
  * Amenities Section
@@ -33,87 +35,82 @@ const Amenities = () => {
       component="section"
       sx={{
         py: { xs: 8, md: 12 },
-        bgcolor: "#ffffff",
+        position: "relative",
+        overflow: "hidden",
+        px: { xs: 2, md: 0 },
       }}
     >
-      <Container>
-        {/* Section Header */}
-        <Box sx={{ textAlign: "center", mb: { xs: 4, md: 6 } }}>
-          <Typography.Header size="md" color="dark" sx={{ mb: 2 }}>
-            Amenities & Services
-          </Typography.Header>
-          <Typography.Body
-            size="md"
-            color="default"
-            sx={{ maxWidth: "600px", mx: "auto", opacity: 0.8 }}
-          >
-            Everything you need for a comfortable and memorable stay
-          </Typography.Body>
-        </Box>
+      <Container padding="0" align="center">
+        <SectionHeader
+          title="Amenities & Services"
+          subtitle="Everything you need for a comfortable and memorable stay"
+        />
 
-        {/* Amenities Horizontal Scroll */}
-        <Box
+        {/* Amenities Grid */}
+        <Grid
+          sm={12}
+          md={10}
+          lg={10}
+          spacing={{ xs: 2, md: 3 }}
+          container
           sx={{
-            display: "flex",
-            gap: 2,
-            overflowX: "auto",
-            pb: 2,
-            px: { xs: 1, md: 0 },
-            // Hide scrollbar but keep functionality
-            "&::-webkit-scrollbar": {
-              height: "6px",
-            },
-            "&::-webkit-scrollbar-track": {
-              bgcolor: "transparent",
-            },
-            "&::-webkit-scrollbar-thumb": {
-              bgcolor: "rgba(0, 0, 0, 0.2)",
-              borderRadius: "3px",
-              "&:hover": {
-                bgcolor: "rgba(0, 0, 0, 0.3)",
-              },
-            },
+            justifyContent: "center",
+            position: "relative",
           }}
         >
           {amenities.map((amenity, index) => (
-            <Chip
-              key={index}
-              variant="soft"
-              color="neutral"
-              startDecorator={amenity.icon}
-              sx={{
-                minWidth: "fit-content",
-                px: 3,
-                py: 1.5,
-                fontSize: "0.9rem",
-                borderRadius: "full",
-                bgcolor: "#fdfcfa",
-                border: "1px solid",
-                borderColor: "divider",
-                color: "#1a1a1a",
-                transition: "all 0.3s ease",
-                "&:hover": {
-                  bgcolor: "#f6d33e",
-                  borderColor: "#f6d33e",
-                  transform: "translateY(-2px)",
-                  boxShadow: "0 4px 12px rgba(246, 211, 62, 0.3)",
-                },
-                "& .MuiChip-startDecorator": {
-                  color: "#da5019",
-                },
-              }}
-            >
-              {amenity.label}
-            </Chip>
-          ))}
-        </Box>
+            <Grid key={index} xs={6} sm={4} md={3}>
+              <Container
+                hover
+                hoverEffect="lift"
+                padding="clamp(1.25rem, 2.5vw + 0.5rem, 1.75rem)"
+                radius="12px"
+                background="light"
+                elevation={1}
+                align="center"
+                gap="clamp(0.75rem, 1.5vw + 0.25rem, 1rem)"
+                cursor="pointer"
+                animation="fade-in"
+                animationDelay={index * 50}
+              >
+                {/* Icon Container */}
+                <Box
+                  sx={{
+                    width: { xs: "48px", md: "56px" },
+                    height: { xs: "48px", md: "56px" },
+                    borderRadius: "12px",
+                    bgcolor: "rgba(218, 80, 25, 0.1)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    transition: "all 0.3s ease",
+                    "& svg": {
+                      fontSize: { xs: "1.75rem", md: "2rem" },
+                      color: "#da5019",
+                      transition: "all 0.3s ease",
+                    },
+                  }}
+                >
+                  {amenity.icon}
+                </Box>
 
-        {/* Additional Note */}
-        <Box sx={{ textAlign: "center", mt: 4 }}>
-          <Typography.Body size="xs" color="default" sx={{ opacity: 0.6 }}>
-            Scroll horizontally to see all amenities
-          </Typography.Body>
-        </Box>
+                {/* Label */}
+                <Typography.Body
+                  size="sm"
+                  color="dark"
+                  align="center"
+                  bold
+                  sx={{
+                    lineHeight: 1.4,
+                    transition: "all 0.3s ease",
+                  }}
+                >
+                  {amenity.label}
+                </Typography.Body>
+              </Container>
+            </Grid>
+          ))}
+        </Grid>
       </Container>
     </Box>
   );

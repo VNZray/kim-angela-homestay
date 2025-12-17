@@ -1,8 +1,10 @@
-import { Box, AspectRatio } from "@mui/joy";
+import { Box, AspectRatio, Grid, useColorScheme } from "@mui/joy";
 import { CheckCircle } from "@mui/icons-material";
 import Typography from "../ui/Typography";
 import Button from "../ui/Button";
 import Container from "../Container";
+import SectionHeader from "../SectionHeader";
+import { getColors } from "@/utils/Colors";
 
 /**
  * Island Hopping Section
@@ -11,6 +13,9 @@ import Container from "../Container";
  * Desktop: Side-by-side (text left 50%, image right 50%)
  */
 const IslandHopping = () => {
+  const { mode } = useColorScheme();
+  const themeColors = getColors(mode);
+
   const tourHighlights = [
     "Visit the famous Big Lagoon and Small Lagoon",
     "Snorkeling in crystal-clear waters",
@@ -25,49 +30,39 @@ const IslandHopping = () => {
       component="section"
       sx={{
         py: { xs: 8, md: 12 },
-        bgcolor: "#fdfcfa",
+        position: "relative",
+        overflow: "hidden",
+        px: { xs: 2, md: 0 },
       }}
     >
-      <Container>
-        <Box
+      <Container padding="0" align="center">
+        <SectionHeader
+          title="Island Hopping Tours"
+          subtitle="Discover the stunning beauty of El Nido's islands and lagoons with our expertly curated tours"
+        />
+
+        <Grid
+          sm={12}
+          md={10}
+          lg={10}
+          spacing={{ xs: 4, md: 6 }}
+          container
           sx={{
-            display: "flex",
-            flexDirection: { xs: "column", md: "row" },
-            gap: { xs: 4, md: 6 },
+            justifyContent: "center",
+            position: "relative",
             alignItems: "center",
           }}
         >
           {/* Text Content - Left Side (50% on desktop) */}
-          <Box
-            sx={{
-              flex: { xs: "1", md: "1 1 50%" },
-              order: { xs: 2, md: 1 },
-            }}
-          >
-            {/* Section Label */}
-            <Typography.Label
-              size="md"
-              color="secondary"
-              bold
-              sx={{ mb: 2, textTransform: "uppercase", letterSpacing: "0.1em" }}
-            >
-              Adventure Awaits
-            </Typography.Label>
-
-            {/* Heading */}
-            <Typography.Header size="md" color="dark" sx={{ mb: 3 }}>
-              Island Hopping Tours
-            </Typography.Header>
-
+          <Grid xs={12} md={6} sx={{ order: { xs: 2, md: 1 } }}>
             {/* Description */}
             <Typography.Body
               size="md"
               color="default"
               sx={{ mb: 4, opacity: 0.8, lineHeight: 1.8 }}
             >
-              Discover the stunning beauty of El Nido's islands and lagoons with
-              our expertly curated island hopping tours. Experience pristine
-              beaches, vibrant marine life, and breathtaking landscapes.
+              Experience pristine beaches, vibrant marine life, and breathtaking
+              landscapes.
             </Typography.Body>
 
             {/* Tour Highlights */}
@@ -84,13 +79,11 @@ const IslandHopping = () => {
                 >
                   <CheckCircle
                     sx={{
-                      color: "#da5019",
-                      fontSize: 24,
+                      color: themeColors.success,
+                      fontSize: 28,
                     }}
                   />
-                  <Typography.Body size="sm" color="default">
-                    {highlight}
-                  </Typography.Body>
+                  <Typography.Body color="default">{highlight}</Typography.Body>
                 </Box>
               ))}
             </Box>
@@ -100,20 +93,14 @@ const IslandHopping = () => {
               <Button variant="solid" colorScheme="primary" sx={{ px: 4 }}>
                 Book a Tour
               </Button>
-              <Button variant="outlined" colorScheme="secondary" sx={{ px: 4 }}>
+              <Button variant="outlined" colorScheme="primary" sx={{ px: 4 }}>
                 View Packages
               </Button>
             </Box>
-          </Box>
+          </Grid>
 
           {/* Image - Right Side (50% on desktop) */}
-          <Box
-            sx={{
-              flex: { xs: "1", md: "1 1 50%" },
-              order: { xs: 1, md: 2 },
-              width: "100%",
-            }}
-          >
+          <Grid xs={12} md={6} sx={{ order: { xs: 1, md: 2 } }}>
             <AspectRatio
               ratio="4/3"
               sx={{
@@ -128,8 +115,8 @@ const IslandHopping = () => {
                 style={{ objectFit: "cover" }}
               />
             </AspectRatio>
-          </Box>
-        </Box>
+          </Grid>
+        </Grid>
       </Container>
     </Box>
   );

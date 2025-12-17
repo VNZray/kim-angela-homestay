@@ -30,14 +30,14 @@ const darkElevationShadows: Record<ElevationLevel, string> = {
 
 interface CustomCardProps extends Omit<JoyCardProps, "color" | "variant"> {
   variant?: "solid" | "outlined" | "soft" | "plain";
-  ColorScheme?: Color;
+  colorScheme?: Color;
   elevation?: ElevationLevel;
   children: React.ReactNode;
 }
 
 const Card = ({
   variant = "solid",
-  ColorScheme = "undefined",
+  colorScheme = "undefined",
   elevation,
   children,
   sx,
@@ -45,7 +45,7 @@ const Card = ({
 }: CustomCardProps) => {
   const { mode } = useColorScheme();
   const themeColors = getColors(mode);
-  const buttonStyles = getColorStyles(ColorScheme, variant, themeColors);
+  const buttonStyles = getColorStyles(colorScheme, variant, themeColors);
 
   // Select shadow set based on current mode
   // Default to light shadows if mode is undefined (server-side) or 'light'

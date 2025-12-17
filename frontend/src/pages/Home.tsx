@@ -5,7 +5,6 @@ import FeaturedRooms from "../components/home-components/FeaturedRooms";
 import IslandHopping from "../components/home-components/IslandHopping";
 import DiningPackages from "../components/home-components/DiningPackages";
 import Amenities from "../components/home-components/Amenities";
-import Footer from "../components/Footer";
 
 /**
  * Home Page Component
@@ -17,6 +16,10 @@ export default function Home() {
     <Box>
       <Hero />
       <ValueProposition />
+      <FeaturedRooms />
+      <IslandHopping />
+      <DiningPackages />
+      <Amenities />
     </Box>
   );
 }
