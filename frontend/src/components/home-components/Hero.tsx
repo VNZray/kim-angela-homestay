@@ -1,10 +1,9 @@
-import { AspectRatio, Box, Grid, useColorScheme } from "@mui/joy";
-import Typography from "../ui/Typography";
-import Button from "../ui/Button";
 import HeroImage from "@/assets/kim-angela-hero.jpg";
-import Container from "../Container";
-import { CalendarMonth, Phone, ArrowForward, Star } from "@mui/icons-material";
 import { getColors } from "@/utils/Colors";
+import { ArrowForward, CalendarMonth, Phone, Star } from "@mui/icons-material";
+import { AspectRatio, Box, Grid, useColorScheme } from "@mui/joy";
+import Button from "../ui/Button";
+import Typography from "../ui/Typography";
 
 /**
  * Hero Section Component

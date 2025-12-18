@@ -1,16 +1,10 @@
-import { Box, Grid, useColorScheme } from "@mui/joy";
-import {
-  Hotel,
-  DirectionsBoat,
-  Restaurant,
-  ArrowForward,
-} from "@mui/icons-material";
-import Typography from "../ui/Typography";
-import Container from "../Container";
 import { getColors } from "@/utils/Colors";
+import { DirectionsBoat, Hotel, Restaurant } from "@mui/icons-material";
+import { Box, Grid, useColorScheme } from "@mui/joy";
+import Container from "../Container";
 import SectionHeader from "../SectionHeader";
-import Card from "../ui/Card";
 import Button from "../ui/Button";
+import Typography from "../ui/Typography";
 
 /**
  * Value Proposition Section

@@ -1,36 +1,9 @@
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
-import DarkMode from "@mui/icons-material/DarkMode";
-import LightMode from "@mui/icons-material/LightMode";
-import { Box, IconButton, Sheet, Typography, useColorScheme } from "@mui/joy";
-import React from "react";
-import { Outlet, useLocation } from "react-router-dom";
-
-// Mode Toggle Component
-function ModeToggle() {
-  const { mode, setMode } = useColorScheme();
-  const [mounted, setMounted] = React.useState(false);
-
-  React.useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) return null;
-
-  return (
-    <IconButton
-      variant="soft"
-      color="neutral"
-      onClick={() => setMode(mode === "dark" ? "light" : "dark")}
-    >
-      {mode === "dark" ? <LightMode /> : <DarkMode />}
-    </IconButton>
-  );
-}
+import { Box, Sheet } from "@mui/joy";
+import { Outlet } from "react-router-dom";
 
 export default function Layout() {
-  const location = useLocation();
-
   return (
     <Sheet
       sx={{

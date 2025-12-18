@@ -1,18 +1,17 @@
-import { Box, Grid } from "@mui/joy";
 import {
-  Wifi,
   AcUnit,
-  LocalParking,
-  Restaurant,
-  Pool,
   FitnessCenter,
-  Spa,
   LocalLaundryService,
+  LocalParking,
+  Pool,
+  Restaurant,
+  Spa,
+  Wifi,
 } from "@mui/icons-material";
-import Typography from "../ui/Typography";
+import { Box, Grid } from "@mui/joy";
 import Container from "../Container";
 import SectionHeader from "../SectionHeader";
-import Card from "../ui/Card";
+import Typography from "../ui/Typography";
 
 /**
  * Amenities Section
