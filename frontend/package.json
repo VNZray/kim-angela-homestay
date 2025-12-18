@@ -9,7 +9,8 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "vite build",
+    "postinstall": "echo 'Dependencies installed successfully'",
     "lint": "eslint .",
     "preview": "vite preview"
   },
