@@ -2,12 +2,12 @@
   "name": "project-template-react",
   "private": true,
   "workspaces": [
-    "frontend",
+    "kim-angela-homestay",
     "backend"
   ],
   "scripts": {
-    "start": "concurrently \"npm run dev -w frontend\" \"npm run dev -w backend\"",
-    "build": "npm run build -w frontend && npm run build -w backend"
+    "start": "concurrently \"npm run dev -w kim-angela-homestay\" \"npm run dev -w backend\"",
+    "build": "npm run build -w kim-angela-homestay && npm run build -w backend"
   },
   "devDependencies": {
     "concurrently": "^8.2.2",

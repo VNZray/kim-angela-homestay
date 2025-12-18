@@ -15,9 +15,9 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg'],
       manifest: {
-        name: 'Rayven Clores Portfolio',
-        short_name: 'Rayven',
-        description: 'Professional Portfolio of Rayven Clores',
+        name: 'Kim Angela Homestay',
+        short_name: 'Kim Angela',
+        description: '',
         theme_color: '#ffffff',
         icons: [
           {
