@@ -34,9 +34,22 @@ export default defineConfig({
       }
     })
   ],
-    resolve: {
+  resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
     },
+  },
+  build: {
+    rollupOptions: {
+      onwarn(warning, warn) {
+        // Suppress certain warnings
+        if (warning.code === 'MODULE_LEVEL_DIRECTIVE') {
+          return;
+        }
+        warn(warning);
+      }
+    },
+    target: 'esnext',
+    minify: 'esbuild',
   },
 });
