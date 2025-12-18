@@ -6,7 +6,7 @@ import App from "@/App";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <CssVarsProvider defaultMode="system">
+    <CssVarsProvider defaultMode="light">
       <CssBaseline />
       <App />
     </CssVarsProvider>
