@@ -6,14 +6,29 @@ import {
   IconButton,
   Sheet,
   useColorScheme,
+  Dropdown,
+  Menu,
+  MenuButton,
+  MenuItem,
+  ListDivider,
 } from "@mui/joy";
 import Typography from "./ui/Typography";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Button from "./ui/Button";
-import { DarkMode, LightMode, Menu, Close } from "@mui/icons-material";
+import {
+  DarkMode,
+  LightMode,
+  Menu as MenuIcon,
+  Close,
+  Logout,
+  Person,
+  Settings,
+} from "@mui/icons-material";
 import Logo from "@/assets/km-anegla-logo.jpg";
 import Container from "./Container";
 import { useState } from "react";
+import LoginModal from "./auth/LoginModal";
+import { useAuth } from "@/context/AuthContext";
 function ModeToggle() {
   const { mode, setMode } = useColorScheme();
   if (!mode) return null;
@@ -30,9 +45,44 @@ function ModeToggle() {
 
 const Header = () => {
   const location = window.location;
+  const navigate = useNavigate();
+  const { user, logout, loading } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navItems = ["Home", "Rooms", "Services", "About"];
+  const [isOpen, setIsOpen] = useState(false);
+
+  const openLoginModal = () => {
+    setIsOpen(true);
+  };
+
+  const closeLoginModal = () => {
+    setIsOpen(false);
+  };
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate("/");
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
+  };
+
+  const getInitials = (name?: string | null, email?: string) => {
+    if (name) {
+      return name
+        .split(" ")
+        .map((n) => n[0])
+        .join("")
+        .toUpperCase()
+        .slice(0, 2);
+    }
+    if (email) {
+      return email.slice(0, 2).toUpperCase();
+    }
+    return "U";
+  };
 
   return (
     <>
@@ -79,7 +129,7 @@ const Header = () => {
             return (
               <Link key={item} to={to} style={{ textDecoration: "none" }}>
                 <Button
-                  variant={isActive ? "soft" : "plain"}
+                  variant={isActive ? "plain" : "plain"}
                   colorScheme={isActive ? "primary" : "primary"}
                 >
                   {item}
@@ -87,13 +137,59 @@ const Header = () => {
               </Link>
             );
           })}
-          <Button>Login</Button>
+
+          {/* Show Login button or User Profile */}
+          {!loading &&
+            (user ? (
+              <Dropdown>
+                <MenuButton
+                  slots={{ root: IconButton }}
+                  slotProps={{ root: { variant: "plain", color: "neutral" } }}
+                  sx={{ borderRadius: "50%", padding: 0 }}
+                >
+                  <Avatar
+                    src={user.photoURL || undefined}
+                    color="primary"
+                    variant="solid"
+                  >
+                    {getInitials(user.displayName, user.email)}
+                  </Avatar>
+                </MenuButton>
+                <Menu
+                  placement="bottom-end"
+                  sx={{ minWidth: 200, zIndex: 1300 }}
+                >
+                  <MenuItem disabled>
+                    <Box>
+                      <Typography.Body size="sm" bold>
+                        {user.displayName || "User"}
+                      </Typography.Body>
+                      <Typography.Body size="xs" color="primary">
+                        {user.email}
+                      </Typography.Body>
+                    </Box>
+                  </MenuItem>
+                  <ListDivider />
+                  <MenuItem onClick={() => navigate("/profile")}>
+                    <Person sx={{ mr: 1 }} />
+                    My Profile
+                  </MenuItem>
+                  <MenuItem onClick={() => navigate("/bookings")}>
+                    <Settings sx={{ mr: 1 }} />
+                    My Bookings
+                  </MenuItem>
+                  <ListDivider />
+                  <MenuItem onClick={handleLogout} color="danger">
+                    <Logout sx={{ mr: 1 }} />
+                    Logout
+                  </MenuItem>
+                </Menu>
+              </Dropdown>
+            ) : (
+              <Button onClick={openLoginModal}>Login</Button>
+            ))}
+
           <ModeToggle />
-          <IconButton sx={{ borderRadius: "50%", padding: 0 }}>
-            <Avatar color="warning" variant="solid">
-              RC
-            </Avatar>
-          </IconButton>
         </Box>
 
         {/* Mobile Menu Button */}
@@ -110,7 +206,7 @@ const Header = () => {
             color="neutral"
             onClick={() => setMobileMenuOpen(true)}
           >
-            <Menu />
+            <MenuIcon />
           </IconButton>
         </Box>
       </Sheet>
@@ -166,8 +262,8 @@ const Header = () => {
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   <Button
-                    variant={isActive ? "solid" : "plain"}
-                    colorScheme={isActive ? "secondary" : "secondary"}
+                    variant={isActive ? "plain" : "plain"}
+                    colorScheme={isActive ? "primary" : "primary"}
                     fullWidth
                     sx={{ justifyContent: "flex-start" }}
                   >
@@ -186,29 +282,88 @@ const Header = () => {
               borderColor: "divider",
             }}
           >
-            <Button fullWidth>Login</Button>
-          </Box>
-
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              gap: 1,
-              mt: 2,
-              pt: 2,
-              borderTop: "1px solid",
-              borderColor: "divider",
-            }}
-          >
-            <IconButton sx={{ borderRadius: "50%", padding: 0 }}>
-              <Avatar color="warning" variant="solid">
-                RC
-              </Avatar>
-            </IconButton>
-            <Typography.Body size="sm">Profile</Typography.Body>
+            {!loading &&
+              (user ? (
+                <>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 2,
+                      mb: 2,
+                      p: 1,
+                      borderRadius: "sm",
+                      bgcolor: "background.level1",
+                    }}
+                  >
+                    <Avatar
+                      src={user.photoURL || undefined}
+                      color="primary"
+                      variant="solid"
+                    >
+                      {getInitials(user.displayName, user.email)}
+                    </Avatar>
+                    <Box>
+                      <Typography.Body size="sm" bold>
+                        {user.displayName || "User"}
+                      </Typography.Body>
+                      <Typography.Body size="xs" color="primary">
+                        {user.email}
+                      </Typography.Body>
+                    </Box>
+                  </Box>
+                  <Button
+                    fullWidth
+                    variant="outlined"
+                    onClick={() => {
+                      navigate("/profile");
+                      setMobileMenuOpen(false);
+                    }}
+                    sx={{ mb: 1 }}
+                  >
+                    <Person sx={{ mr: 1 }} />
+                    My Profile
+                  </Button>
+                  <Button
+                    fullWidth
+                    variant="outlined"
+                    onClick={() => {
+                      navigate("/bookings");
+                      setMobileMenuOpen(false);
+                    }}
+                    sx={{ mb: 1 }}
+                  >
+                    <Settings sx={{ mr: 1 }} />
+                    My Bookings
+                  </Button>
+                  <Button
+                    fullWidth
+                    colorScheme="error"
+                    onClick={() => {
+                      handleLogout();
+                      setMobileMenuOpen(false);
+                    }}
+                  >
+                    <Logout sx={{ mr: 1 }} />
+                    Logout
+                  </Button>
+                </>
+              ) : (
+                <Button
+                  fullWidth
+                  onClick={() => {
+                    openLoginModal();
+                    setMobileMenuOpen(false);
+                  }}
+                >
+                  Login
+                </Button>
+              ))}
           </Box>
         </Box>
       </Drawer>
+
+      <LoginModal open={isOpen} onClose={closeLoginModal} />
     </>
   );
 };

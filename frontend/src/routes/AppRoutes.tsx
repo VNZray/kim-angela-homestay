@@ -1,14 +1,19 @@
 import { AuthProvider } from "@/context/AuthContext";
+import Login from "@/pages/Auth/Login";
+import Register from "@/pages/Auth/Register";
+import Services from "@/pages/Services";
 import { Box, Typography } from "@mui/joy";
 import { Outlet, Route, Routes } from "react-router-dom";
 import DashboardLayout from "../layouts/BusinessLayout";
 import Layout from "../layouts/Layout";
 import About from "../pages/About";
 import { AccommodationDashboard } from "../pages/Business/Dashboard";
+import UserManagement from "../pages/Business/UserManagement";
 import Home from "../pages/Home";
 import NotFound from "../pages/NotFound";
 import Rooms from "../pages/Rooms";
-import Services from "@/pages/Services";
+import AuthLayout from "@/layouts/AuthLayout";
+import ProtectedRoute from "./ProtectedRoute";
 
 const PagePlaceholder = ({ title }: { title: string }) => (
   <Box sx={{ p: 2 }}>
@@ -36,6 +41,11 @@ export default function AppRoutes() {
           <Route path="about" element={<About />} />
         </Route>
 
+        <Route path="/auth" element={<AuthLayout />}>
+          <Route path="login" element={<Login />} />
+          <Route path="register" element={<Register />} />
+        </Route>
+
         {/* 3. BUSINESS ROUTES */}
         <Route path="/business" element={<DashboardLayout />}>
           {/* We conditionally render children based on type, but the PARENT route (/business) always exists */}
@@ -61,6 +71,16 @@ export default function AppRoutes() {
           <Route
             path="staff"
             element={<PagePlaceholder title="Manage Staff" />}
+          />
+
+          {/* User Management - Admin Only */}
+          <Route
+            path="users"
+            element={
+              <ProtectedRoute requiredRole="admin">
+                <UserManagement />
+              </ProtectedRoute>
+            }
           />
 
           <Route

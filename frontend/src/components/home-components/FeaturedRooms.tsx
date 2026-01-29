@@ -6,6 +6,7 @@ import Button from "../ui/Button";
 import Container from "../Container";
 import SectionHeader from "../SectionHeader";
 import { getColors } from "@/utils/Colors";
+import RoomCard from "../cards/RoomCard";
 
 /**
  * Featured Rooms Section
@@ -82,102 +83,16 @@ const FeaturedRooms = () => {
           }}
         >
           {rooms.map((room, index) => (
-            <Grid key={index} xs={12} sm={6} md={4}>
-              <Card
-                colorScheme="light"
-                sx={{
-                  height: "100%",
-                  borderRadius: "lg",
-                  transition: "all 0.3s ease",
-                  "&:hover": {
-                    transform: "translateY(-8px)",
-                    boxShadow: "0 12px 24px rgba(0, 0, 0, 0.15)",
-                  },
-                }}
-              >
-                {/* Room Image */}
-                <AspectRatio
-                  ratio="4/3"
-                  sx={{
-                    borderRadius: "md",
-                    overflow: "hidden",
-                    mb: 2,
-                  }}
-                >
-                  <img
-                    src={room.image}
-                    alt={room.title}
-                    style={{ objectFit: "cover" }}
-                  />
-                </AspectRatio>
-
-                {/* Room Info */}
-                <Box sx={{ p: 2 }}>
-                  {/* Title with Icon */}
-                  <Box
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 1,
-                      mb: 1,
-                    }}
-                  >
-                    <Box sx={{ color: "#da5019" }}>{room.icon}</Box>
-                    <Typography.CardTitle size="md" color="dark">
-                      {room.title}
-                    </Typography.CardTitle>
-                  </Box>
-
-                  {/* Description */}
-                  <Typography.Body
-                    size="sm"
-                    color="default"
-                    sx={{ mb: 2, opacity: 0.8 }}
-                  >
-                    {room.description}
-                  </Typography.Body>
-
-                  {/* Capacity */}
-                  <Typography.Label
-                    size="sm"
-                    color="secondary"
-                    sx={{ mb: 2, display: "block" }}
-                  >
-                    Capacity: {room.capacity}
-                  </Typography.Label>
-
-                  {/* Features */}
-                  <Box sx={{ mb: 2 }}>
-                    {room.features.map((feature, idx) => (
-                      <Typography.Body
-                        key={idx}
-                        size="xs"
-                        color="default"
-                        sx={{ mb: 0.5, opacity: 0.7 }}
-                      >
-                        • {feature}
-                      </Typography.Body>
-                    ))}
-                  </Box>
-
-                  {/* Price and CTA */}
-                  <Box
-                    sx={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      mt: 3,
-                    }}
-                  >
-                    <Typography.CardTitle size="md" color="primary">
-                      {room.price}
-                    </Typography.CardTitle>
-                    <Button variant="soft" colorScheme="primary">
-                      View Details
-                    </Button>
-                  </Box>
-                </Box>
-              </Card>
+            <Grid key={index} xs={12} sm={12} md={6} lg={6} xl={4}>
+              <RoomCard
+                title={room.title}
+                description={room.description}
+                capacity={room.capacity}
+                features={room.features}
+                price={room.price}
+                image={room.image}
+                buttonText="Book Now"
+              />
             </Grid>
           ))}
         </Grid>

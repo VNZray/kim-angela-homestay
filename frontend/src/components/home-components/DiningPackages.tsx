@@ -176,7 +176,7 @@ const DiningPackages = () => {
                     <Typography.CardTitle size="md" color="primary">
                       {pkg.price}
                     </Typography.CardTitle>
-                    <Button variant="soft" colorScheme="secondary" size="sm">
+                    <Button variant="soft" colorScheme="primary" size="sm">
                       Order Now
                     </Button>
                   </Box>

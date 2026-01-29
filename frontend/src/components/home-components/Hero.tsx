@@ -83,7 +83,7 @@ const Hero = () => {
                 gap: 1,
                 bgcolor: "primary.softBg",
                 px: 2,
-                py: 0.5,
+                py: 1,
                 borderRadius: "xl",
                 width: "fit-content",
                 fontSize: "0.875rem",
@@ -97,14 +97,24 @@ const Hero = () => {
 
             {/* Main Title */}
             <Typography.Title
-              color="primary"
+              color="default"
               size="lg"
               sx={{
                 lineHeight: 1.1,
                 mb: 1,
               }}
             >
-              Welcome to Kim Angela Homestay
+              Welcome to{" "}
+              <Typography.Title
+                color="primary"
+                size="lg"
+                sx={{
+                  lineHeight: 1.1,
+                  mb: 1,
+                }}
+              >
+                Kim Angela Homestay
+              </Typography.Title>
             </Typography.Title>
 
             {/* Subtitle */}

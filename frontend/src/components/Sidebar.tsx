@@ -13,6 +13,7 @@ import {
   Tooltip,
 } from "@mui/joy";
 import { colors } from "@/utils/Colors";
+import { useAuth } from "@/context/AuthContext";
 // Icons
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import ApprovalIcon from "@mui/icons-material/FactCheck";
@@ -56,6 +57,7 @@ type MenuItem = {
   icon: React.ReactElement;
   path?: string;
   children?: { title: string; path: string; icon: React.ReactElement }[];
+  requiredRole?: "admin" | "manager" | "staff"; // Optional: restrict menu item to specific roles
 };
 
 // Define allowed roles for type safety
@@ -172,6 +174,12 @@ const accommodationMenuItems: MenuItem[] = [
     path: `${business}/staff`,
   },
   {
+    title: "User Management",
+    icon: <PersonIcon />,
+    path: `${business}/users`,
+    requiredRole: "admin", // Only admins can see this
+  },
+  {
     title: "Settings",
     icon: <SettingsIcon />,
     path: `${business}/settings`,
@@ -260,6 +268,7 @@ export default function Sidebar({
   closeMobileSidebar,
 }: SidebarProps) {
   const location = useLocation();
+  const { user } = useAuth();
   const [openMenus, setOpenMenus] = React.useState<Record<string, boolean>>({
     Services: true,
     Store: true, // Open Store menu by default for Shop view
@@ -276,6 +285,12 @@ export default function Sidebar({
   } else {
     menuToRender = adminMenuItems;
   }
+
+  // Filter menu items based on user role
+  const filteredMenu = menuToRender.filter((item) => {
+    if (!item.requiredRole) return true; // No role requirement, show to everyone
+    return user?.role === item.requiredRole; // Only show if user has required role
+  });
 
   const handleGroupClick = (title: string) => {
     if (isCollapsed && !isMobile) {
@@ -342,8 +357,8 @@ export default function Sidebar({
 
       {/* 2. Navigation Items */}
       <List size="sm" sx={{ "--ListItem-radius": "8px", "--List-gap": "4px" }}>
-        {/* DYNAMICALLY RENDER THE SELECTED MENU */}
-        {menuToRender.map((item) => (
+        {/* DYNAMICALLY RENDER THE FILTERED MENU */}
+        {filteredMenu.map((item) => (
           <React.Fragment key={item.title}>
             <ListItem>
               {item.children ? (

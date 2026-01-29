@@ -2,12 +2,12 @@
   "name": "project-template-react",
   "private": true,
   "workspaces": [
-    "kim-angela-homestay",
+    "frontend",
     "backend"
   ],
   "scripts": {
-    "start": "concurrently \"npm run dev -w kim-angela-homestay\" \"npm run dev -w backend\"",
-    "build": "npm run build -w kim-angela-homestay && npm run build -w backend"
+    "start": "concurrently \"npm run dev -w frontend\"",
+    "build": "npm run build -w frontend && npm run build -w backend"
   },
   "devDependencies": {
     "concurrently": "^8.2.2",
@@ -15,6 +15,7 @@
     "metro-runtime": "^0.83.1"
   },
   "dependencies": {
-    "emailjs-com": "^3.2.0"
+    "emailjs-com": "^3.2.0",
+    "firebase": "^12.8.0"
   }
 }
