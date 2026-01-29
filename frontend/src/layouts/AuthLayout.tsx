@@ -1,5 +1,3 @@
-import Footer from "@/components/Footer";
-import Header from "@/components/Header";
 import { Box, Sheet } from "@mui/joy";
 import { Outlet } from "react-router-dom";
 

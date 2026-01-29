@@ -1,23 +1,23 @@
-import { useState, useEffect } from "react";
+import Alert from "@/components/ui/Alert";
+import Button from "@/components/ui/Button";
+import Typography from "@/components/ui/Typography";
+import type { UserRole } from "@/types/User";
+import supabase from "@/utils/supabase";
+import { Delete, Edit, Refresh } from "@mui/icons-material";
 import {
   Box,
-  Table,
-  Sheet,
   Chip,
   IconButton,
-  Select,
-  Option,
   Modal,
-  ModalDialog,
   ModalClose,
+  ModalDialog,
+  Option,
+  Select,
+  Sheet,
   Stack,
+  Table,
 } from "@mui/joy";
-import Typography from "@/components/ui/Typography";
-import Button from "@/components/ui/Button";
-import { Edit, Delete, PersonAdd, Refresh } from "@mui/icons-material";
-import supabase from "@/utils/supabase";
-import type { UserRole } from "@/types/User";
-import Alert from "@/components/ui/Alert";
+import { useEffect, useState } from "react";
 
 interface UserRoleData {
   id: string;

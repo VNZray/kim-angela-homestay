@@ -1,12 +1,10 @@
-import { Box, Grid, AspectRatio, useColorScheme } from "@mui/joy";
-import { People, Favorite } from "@mui/icons-material";
-import Typography from "../ui/Typography";
-import Card from "../ui/Card";
-import Button from "../ui/Button";
+import { getColors } from "@/utils/Colors";
+import { Favorite, People } from "@mui/icons-material";
+import { Box, Grid, useColorScheme } from "@mui/joy";
+import RoomCard from "../cards/RoomCard";
 import Container from "../Container";
 import SectionHeader from "../SectionHeader";
-import { getColors } from "@/utils/Colors";
-import RoomCard from "../cards/RoomCard";
+import Button from "../ui/Button";
 
 /**
  * Featured Rooms Section
