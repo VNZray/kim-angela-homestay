@@ -19,9 +19,13 @@ import {
   browserSessionPersistence,
   type FirebaseUser,
 } from "../utils/firebase";
-import supabase from "../utils/supabase";
 
-import type { User, UserRole } from "../types/User";
+import type { User } from "../types/User";
+import {
+  getOrCreateUserRole,
+  markUserOffline,
+} from "../services/auth/AuthService";
+import { createGuestForUser } from "../services/guest/GuestService";
 
 interface AuthContextType {
   user: User | null;
@@ -32,7 +36,11 @@ interface AuthContextType {
     password: string,
     rememberMe?: boolean,
   ) => Promise<User>;
-  register: (email: string, password: string) => Promise<User>;
+  register: (
+    email: string,
+    password: string,
+    profile?: { firstName: string; lastName: string; phone?: string },
+  ) => Promise<User>;
   loginWithGoogle: () => Promise<User>;
   logout: () => Promise<void>;
   refreshUserRole: () => Promise<void>;
@@ -42,45 +50,6 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 interface AuthProviderProps {
   children: ReactNode;
-}
-
-// Helper function to get user role from Supabase
-async function getUserRole(
-  firebaseUid: string,
-  email: string,
-): Promise<UserRole> {
-  try {
-    const { data, error } = await supabase
-      .from("user_roles")
-      .select("role")
-      .eq("firebase_uid", firebaseUid)
-      .single();
-
-    if (error || !data) {
-      // User doesn't have a role yet, create default tourist role
-      const { data: newRole, error: insertError } = await supabase
-        .from("user_roles")
-        .insert({
-          firebase_uid: firebaseUid,
-          email: email,
-          role: "tourist",
-        })
-        .select("role")
-        .single();
-
-      if (insertError || !newRole) {
-        console.error("Error creating user role:", insertError);
-        return "tourist"; // Default fallback
-      }
-
-      return newRole.role as UserRole;
-    }
-
-    return data.role as UserRole;
-  } catch (error) {
-    console.error("Error fetching user role:", error);
-    return "tourist"; // Default fallback
-  }
 }
 
 export function AuthProvider({ children }: AuthProviderProps) {
@@ -95,9 +64,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
       if (firebaseUser) {
         // Fetch user role from Supabase
-        const role = await getUserRole(
+        const role = await getOrCreateUserRole(
           firebaseUser.uid,
           firebaseUser.email || "",
+          firebaseUser.displayName,
         );
 
         // Create our app's user object with role from database
@@ -122,9 +92,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
   // Function to refresh user role (useful after role changes)
   const refreshUserRole = useCallback(async () => {
     if (firebaseUser) {
-      const role = await getUserRole(
+      const role = await getOrCreateUserRole(
         firebaseUser.uid,
         firebaseUser.email || "",
+        firebaseUser.displayName,
       );
       setUser((prev) => (prev ? { ...prev, role } : null));
     }
@@ -151,9 +122,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
         );
 
         // Fetch user role from Supabase
-        const role = await getUserRole(
+        const role = await getOrCreateUserRole(
           credential.user.uid,
           credential.user.email || "",
+          credential.user.displayName,
         );
 
         const appUser: User = {
@@ -175,7 +147,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
   );
 
   const register = useCallback(
-    async (email: string, password: string): Promise<User> => {
+    async (
+      email: string,
+      password: string,
+      profile?: { firstName: string; lastName: string; phone?: string },
+    ): Promise<User> => {
       try {
         // Create user with Firebase
         const credential = await createUserWithEmailAndPassword(
@@ -185,9 +161,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
         );
 
         // Fetch user role from Supabase (will be created as tourist by default)
-        const role = await getUserRole(
+        const role = await getOrCreateUserRole(
           credential.user.uid,
           credential.user.email || "",
+          credential.user.displayName,
         );
 
         const appUser: User = {
@@ -197,6 +174,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
           photoURL: credential.user.photoURL,
           role: role,
         };
+
+        if (profile) {
+          await createGuestForUser({
+            firebaseUid: credential.user.uid,
+            firstName: profile.firstName,
+            lastName: profile.lastName,
+            phone: profile.phone,
+          });
+        }
 
         return appUser;
       } catch (error: any) {
@@ -213,9 +199,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
       const credential = await signInWithPopup(auth, googleProvider);
 
       // Fetch user role from Supabase
-      const role = await getUserRole(
+      const role = await getOrCreateUserRole(
         credential.user.uid,
         credential.user.email || "",
+        credential.user.displayName,
       );
 
       const appUser: User = {
@@ -235,6 +222,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   const logout = useCallback(async () => {
     try {
+      const currentUid = auth.currentUser?.uid;
+      if (currentUid) {
+        await markUserOffline(currentUid);
+      }
       await signOut(auth);
       setUser(null);
       setFirebaseUser(null);

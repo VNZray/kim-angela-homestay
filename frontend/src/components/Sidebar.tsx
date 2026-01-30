@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   Box,
   List,
@@ -12,7 +12,6 @@ import {
   Avatar,
   Tooltip,
 } from "@mui/joy";
-import { colors } from "@/utils/Colors";
 import { useAuth } from "@/context/AuthContext";
 // Icons
 import DashboardIcon from "@mui/icons-material/Dashboard";
@@ -44,10 +43,9 @@ import CategoryIcon from "@mui/icons-material/Category"; // Categories
 import BuildIcon from "@mui/icons-material/Build"; // Services (Store)
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart"; // Orders
 import PercentIcon from "@mui/icons-material/Percent"; // Discount
+import { colors } from "@/utils/Colors";
 
 interface SidebarProps {
-  isCollapsed: boolean;
-  toggleSidebar: () => void;
   isMobile: boolean;
   closeMobileSidebar: () => void;
 }
@@ -69,6 +67,7 @@ const BUSINESS_TYPE = "accommodation";
 
 const tourism = "/tourism";
 const business = "/business";
+const BUSINESS_NAME = "Kim Angela Homestay";
 
 // --- 1. ADMIN (TOURISM) MENU STRUCTURE ---
 const adminMenuItems: MenuItem[] = [
@@ -262,13 +261,12 @@ const shopMenuItems: MenuItem[] = [
 ];
 
 export default function Sidebar({
-  isCollapsed,
-  toggleSidebar,
   isMobile,
   closeMobileSidebar,
 }: SidebarProps) {
   const location = useLocation();
-  const { user } = useAuth();
+  const navigate = useNavigate();
+  const { user, logout } = useAuth();
   const [openMenus, setOpenMenus] = React.useState<Record<string, boolean>>({
     Services: true,
     Store: true, // Open Store menu by default for Shop view
@@ -292,12 +290,51 @@ export default function Sidebar({
     return user?.role === item.requiredRole; // Only show if user has required role
   });
 
+  // Separate main navigation from settings so Settings can be placed in the footer
+  const settingsItem = (menuToRender as MenuItem[]).find(
+    (item) => item.title === "Settings",
+  );
+
+  const settingsPath =
+    settingsItem?.path ??
+    (CURRENT_ROLE === "admin" || CURRENT_ROLE === "superadmin"
+      ? `${tourism}/settings`
+      : `${business}/settings`);
+
+  const mainMenuItems = filteredMenu.filter(
+    (item) => item.title !== "Settings",
+  );
+
   const handleGroupClick = (title: string) => {
-    if (isCollapsed && !isMobile) {
-      toggleSidebar();
-    }
     setOpenMenus((prev) => ({ ...prev, [title]: !prev[title] }));
   };
+
+  const handleLogout = async () => {
+    await logout();
+    navigate("/auth/login");
+    if (isMobile) {
+      closeMobileSidebar();
+    }
+  };
+
+  const getInitials = (name?: string | null, email?: string | null) => {
+    if (name && name.trim().length > 0) {
+      const parts = name.trim().split(" ");
+      const first = parts[0]?.[0];
+      const last = parts.length > 1 ? parts[parts.length - 1]?.[0] : "";
+      return `${first ?? ""}${last ?? ""}`.toUpperCase();
+    }
+
+    if (email && email.length > 0) {
+      return email[0]?.toUpperCase();
+    }
+
+    return "KH"; // Default initials for Kim Angela Homestay
+  };
+
+  const userInitials = getInitials(user?.displayName, user?.email ?? undefined);
+  const userSubtitle = user?.email ?? "Business dashboard";
+  const isCollapsedUI = false; // Collapse behavior removed; sidebar is always expanded
 
   return (
     <Sheet
@@ -313,7 +350,7 @@ export default function Sidebar({
         transition: "transform 0.4s, width 0.4s",
         zIndex: 1000,
         height: "100vh",
-        width: isCollapsed ? "60px" : "260px",
+        width: "260px",
         top: 0,
         p: 2,
         flexShrink: 0,
@@ -327,38 +364,50 @@ export default function Sidebar({
     >
       {/* 1. Header */}
       <Box
-        sx={{ display: "flex", gap: 1, alignItems: "center", minHeight: 40 }}
+        sx={{
+          display: "flex",
+          gap: 1,
+          alignItems: "center",
+          minHeight: 56,
+        }}
       >
-        <Avatar variant="solid" color="danger" size="sm">
-          CV
+        <Avatar variant="solid" color="primary" size="sm">
+          {userInitials}
         </Avatar>
-        <Typography
-          level="title-lg"
-          sx={{
-            whiteSpace: "nowrap",
-            opacity: isCollapsed ? 0 : 1,
-            transition: "opacity 0.2s",
-            display: isCollapsed ? "none" : "block",
-          }}
-        >
-          Kim Angela Homestay
-        </Typography>
+        {!isCollapsedUI && (
+          <Box sx={{ ml: 1, overflow: "hidden" }}>
+            <Typography level="title-md" sx={{ whiteSpace: "nowrap" }}>
+              {BUSINESS_NAME}
+            </Typography>
+            <Typography
+              level="body-xs"
+              sx={{
+                color: "text.tertiary",
+                whiteSpace: "nowrap",
+                textOverflow: "ellipsis",
+                overflow: "hidden",
+              }}
+            >
+              {userSubtitle}
+            </Typography>
+          </Box>
+        )}
         <IconButton
-          onClick={closeMobileSidebar}
           variant="plain"
           sx={{
             ml: "auto",
             display: { xs: "flex", md: "none" },
           }}
+          onClick={closeMobileSidebar}
         >
-          <MenuOpenIcon />
+          <MenuOpenIcon fontSize="small" />
         </IconButton>
       </Box>
 
       {/* 2. Navigation Items */}
-      <List size="sm" sx={{ "--ListItem-radius": "8px", "--List-gap": "4px" }}>
+      <List size="sm" sx={{ "--ListItem-radius": "8px", "--List-gap": "8px" }}>
         {/* DYNAMICALLY RENDER THE FILTERED MENU */}
-        {filteredMenu.map((item) => (
+        {mainMenuItems.map((item) => (
           <React.Fragment key={item.title}>
             <ListItem>
               {item.children ? (
@@ -367,25 +416,26 @@ export default function Sidebar({
                   selected={openMenus[item.title]}
                   sx={{
                     "&.Mui-selected": {
-                      bgcolor: "var(--ListItemButton-hoverBackground)",
-                      color: "inherit",
+                      bgcolor: colors.secondary,
+                      color: "primary.plainColor",
                     },
                     "&.Mui-selected:hover": {
-                      bgcolor: "var(--ListItemButton-hoverBackground)",
+                      bgcolor: colors.secondary,
                     },
+                    position: "relative",
                   }}
                 >
                   {item.icon}
                   <ListItemContent
                     sx={{
                       ml: 1.5,
-                      opacity: isCollapsed ? 0 : 1,
-                      display: isCollapsed ? "none" : "block",
+                      opacity: isCollapsedUI ? 0 : 1,
+                      display: isCollapsedUI ? "none" : "block",
                     }}
                   >
                     <Typography level="title-md">{item.title}</Typography>
                   </ListItemContent>
-                  {!isCollapsed && (
+                  {!isCollapsedUI && (
                     <KeyboardArrowDown
                       sx={{
                         transform: openMenus[item.title]
@@ -397,7 +447,7 @@ export default function Sidebar({
                 </ListItemButton>
               ) : (
                 <Tooltip
-                  title={isCollapsed ? item.title : ""}
+                  title={isCollapsedUI ? item.title : ""}
                   placement="right"
                 >
                   <ListItemButton
@@ -406,21 +456,20 @@ export default function Sidebar({
                     selected={location.pathname === item.path}
                     sx={{
                       "&.Mui-selected": {
-                        bgcolor: "var(--ListItemButton-hoverBackground)",
-                        color: "inherit",
-                        fontWeight: "bold",
+                        bgcolor: colors.transparentBlack,
                       },
                       "&.Mui-selected:hover": {
-                        bgcolor: "var(--ListItemButton-hoverBackground)",
+                        bgcolor: colors.transparentBlack,
                       },
+                      position: "relative",
                     }}
                   >
                     {item.icon}
                     <ListItemContent
                       sx={{
                         ml: 1.5,
-                        opacity: isCollapsed ? 0 : 1,
-                        display: isCollapsed ? "none" : "block",
+                        opacity: isCollapsedUI ? 0 : 1,
+                        display: isCollapsedUI ? "none" : "block",
                       }}
                     >
                       <Typography level="title-md">{item.title}</Typography>
@@ -430,7 +479,7 @@ export default function Sidebar({
               )}
             </ListItem>
 
-            {item.children && openMenus[item.title] && !isCollapsed && (
+            {item.children && openMenus[item.title] && (
               <List sx={{ ml: 3, gap: 0.5, maxHeight: 260, overflowY: "auto" }}>
                 {item.children.map((child) => (
                   <ListItem key={child.title}>
@@ -440,7 +489,7 @@ export default function Sidebar({
                       selected={location.pathname === child.path}
                       sx={{
                         "&.Mui-selected": {
-                          bgcolor: "var(--ListItemButton-hoverBackground)",
+                          bgcolor: colors.transparentBlack,
                           color: "inherit",
                         },
                       }}
@@ -458,26 +507,62 @@ export default function Sidebar({
         ))}
       </List>
 
-      {/* 3. Logout */}
-      <Box sx={{ mt: "auto" }}>
-        <List size="sm" sx={{ "--ListItem-radius": "8px" }}>
+      {/* 3. Settings & Logout */}
+      <Box
+        sx={{
+          mt: "auto",
+          pt: 1,
+          borderTop: "1px solid",
+          borderColor: "divider",
+        }}
+      >
+        <List
+          size="sm"
+          sx={{ "--ListItem-radius": "8px", "--List-gap": "4px" }}
+        >
           <ListItem>
-            <Tooltip title={isCollapsed ? "Logout" : ""} placement="right">
+            <Tooltip title={isCollapsedUI ? "Settings" : ""} placement="right">
               <ListItemButton
                 component={Link}
-                to="/"
+                to={settingsPath}
+                selected={location.pathname === settingsPath}
                 sx={{
                   "&.Mui-selected": {
-                    bgcolor: "var(--ListItemButton-hoverBackground)",
+                    bgcolor: colors.transparentBlack,
                   },
+                  "&.Mui-selected:hover": {
+                    bgcolor: colors.transparentBlack,
+                  },
+                }}
+              >
+                <SettingsIcon />
+                <ListItemContent
+                  sx={{
+                    ml: 1.5,
+                    opacity: isCollapsedUI ? 0 : 1,
+                    display: isCollapsedUI ? "none" : "block",
+                  }}
+                >
+                  <Typography level="title-md">Settings</Typography>
+                </ListItemContent>
+              </ListItemButton>
+            </Tooltip>
+          </ListItem>
+          <ListItem>
+            <Tooltip title={isCollapsedUI ? "Logout" : ""} placement="right">
+              <ListItemButton
+                component="button"
+                onClick={handleLogout}
+                sx={{
+                  justifyContent: isCollapsedUI ? "center" : "flex-start",
                 }}
               >
                 <Logout />
                 <ListItemContent
                   sx={{
                     ml: 1.5,
-                    opacity: isCollapsed ? 0 : 1,
-                    display: isCollapsed ? "none" : "block",
+                    opacity: isCollapsedUI ? 0 : 1,
+                    display: isCollapsedUI ? "none" : "block",
                   }}
                 >
                   <Typography level="title-md">Logout</Typography>

@@ -1,4 +1,4 @@
-// Quick test to check if Supabase can see the user_roles table
+// Quick test to check if Supabase can see the users table
 // Run this in your browser console on localhost:5173
 
 import supabase from './utils/supabase';
@@ -10,22 +10,22 @@ async function testSupabaseConnection() {
     try {
         // Test 1: Check if table is accessible
         const { data, error } = await supabase
-            .from('user_roles')
+            .from('users')
             .select('*')
             .limit(1);
 
         if (error) {
-            console.error('❌ Error accessing user_roles:', error);
+            console.error('❌ Error accessing users table:', error);
             console.log('💡 Solution: Reload schema in Supabase Dashboard > API Settings');
             return false;
         }
 
-        console.log('✅ user_roles table is accessible!');
+        console.log('✅ users table is accessible!');
         console.log('📊 Sample data:', data);
 
         // Test 2: Check your specific user
         const { data: userData, error: userError } = await supabase
-            .from('user_roles')
+            .from('users')
             .select('role')
             .eq('firebase_uid', 'KcpWaAyyfrckPDkhHI0nKFwxyR82')
             .single();

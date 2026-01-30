@@ -13,13 +13,11 @@ import MenuIcon from "@mui/icons-material/Menu";
 import Sidebar from "../components/Sidebar";
 import { DarkMode, LightMode } from "@mui/icons-material";
 import { useAuth } from "@/context/AuthContext";
+import { colors } from "@/utils/Colors";
 
 export default function DashboardLayout() {
   // Get user data from auth context
   const { user } = useAuth();
-
-  // State for Desktop Collapse
-  const [isCollapsed, setIsCollapsed] = React.useState(false);
 
   // State for Mobile Drawer
   const [isMobileSidebarOpen, setMobileSidebarOpen] = React.useState(false);
@@ -73,8 +71,6 @@ export default function DashboardLayout() {
     <Box sx={{ display: "flex", minHeight: "100vh" }}>
       {/* Sidebar Component */}
       <Sidebar
-        isCollapsed={isCollapsed}
-        toggleSidebar={() => setIsCollapsed(!isCollapsed)}
         isMobile={isMobileSidebarOpen}
         closeMobileSidebar={() => setMobileSidebarOpen(false)}
       />
@@ -106,7 +102,7 @@ export default function DashboardLayout() {
             p: 2,
             borderBottom: "1px solid",
             borderColor: "divider",
-            bgcolor: { xs: "#0A1B47", md: "background.surface" },
+            bgcolor: colors.transparent,
             justifyContent: "space-between",
           }}
         >

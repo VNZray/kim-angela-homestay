@@ -1,8 +1,12 @@
 import Alert from "@/components/ui/Alert";
 import Button from "@/components/ui/Button";
 import Typography from "@/components/ui/Typography";
-import type { UserRole } from "@/types/User";
-import supabase from "@/utils/supabase";
+import type { SupabaseUser, UserRole } from "@/types/User";
+import {
+  deleteUser,
+  getAllUsers,
+  updateUserRole,
+} from "@/services/auth/AuthService";
 import { Delete, Edit, Refresh } from "@mui/icons-material";
 import {
   Box,
@@ -19,16 +23,6 @@ import {
 } from "@mui/joy";
 import { useEffect, useState } from "react";
 
-interface UserRoleData {
-  id: string;
-  firebase_uid: string;
-  email: string;
-  role: UserRole;
-  display_name: string | null;
-  created_at: string;
-  updated_at: string;
-}
-
 const roleColors: Record<
   UserRole,
   "primary" | "success" | "warning" | "danger"
@@ -40,9 +34,9 @@ const roleColors: Record<
 };
 
 const UserManagement = () => {
-  const [users, setUsers] = useState<UserRoleData[]>([]);
+  const [users, setUsers] = useState<SupabaseUser[]>([]);
   const [loading, setLoading] = useState(true);
-  const [editingUser, setEditingUser] = useState<UserRoleData | null>(null);
+  const [editingUser, setEditingUser] = useState<SupabaseUser | null>(null);
   const [selectedRole, setSelectedRole] = useState<UserRole>("tourist");
   const [alert, setAlert] = useState({
     open: false,
@@ -54,13 +48,7 @@ const UserManagement = () => {
   const fetchUsers = async () => {
     setLoading(true);
     try {
-      const { data, error } = await supabase
-        .from("user_roles")
-        .select("*")
-        .order("created_at", { ascending: false });
-
-      if (error) throw error;
-
+      const data = await getAllUsers();
       setUsers(data || []);
     } catch (error: any) {
       console.error("Error fetching users:", error);
@@ -79,7 +67,7 @@ const UserManagement = () => {
     fetchUsers();
   }, []);
 
-  const handleEditRole = (user: UserRoleData) => {
+  const handleEditRole = (user: SupabaseUser) => {
     setEditingUser(user);
     setSelectedRole(user.role);
   };
@@ -88,12 +76,7 @@ const UserManagement = () => {
     if (!editingUser) return;
 
     try {
-      const { error } = await supabase
-        .from("user_roles")
-        .update({ role: selectedRole, updated_at: new Date().toISOString() })
-        .eq("id", editingUser.id);
-
-      if (error) throw error;
+      await updateUserRole(editingUser.id, selectedRole);
 
       setAlert({
         open: true,
@@ -125,12 +108,7 @@ const UserManagement = () => {
     }
 
     try {
-      const { error } = await supabase
-        .from("user_roles")
-        .delete()
-        .eq("id", userId);
-
-      if (error) throw error;
+      await deleteUser(userId);
 
       setAlert({
         open: true,
@@ -348,11 +326,7 @@ const UserManagement = () => {
               </Select>
             </Box>
             <Box sx={{ display: "flex", gap: 1, justifyContent: "flex-end" }}>
-              <Button
-                variant="outlined"
-                colorScheme="undefined"
-                onClick={() => setEditingUser(null)}
-              >
+              <Button variant="outlined" onClick={() => setEditingUser(null)}>
                 Cancel
               </Button>
               <Button colorScheme="primary" onClick={handleSaveRole}>

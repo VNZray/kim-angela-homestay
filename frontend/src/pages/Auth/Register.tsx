@@ -21,7 +21,7 @@ const Register = () => {
     phone: "",
     password: "",
     confirmPassword: "",
-    agreeToTerms: false,
+    agreeToTerms: true,
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -114,19 +114,26 @@ const Register = () => {
     }
 
     try {
-      // Firebase registration through AuthContext
-      await register(formData.email, formData.password);
+      // Registration through AuthContext: Firebase + Supabase users + guest profile
+      const newUser = await register(formData.email, formData.password, {
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        phone: formData.phone || undefined,
+      });
 
       setAlert({
         open: true,
         type: "success",
         title: "Success!",
-        message: "Account created successfully! Redirecting to dashboard...",
+        message: "Account created successfully! Redirecting...",
       });
 
-      // Navigate to dashboard after successful registration
+      // Redirect based on role: tourists go to home, business roles to dashboard
       setTimeout(() => {
-        navigate("/business/dashboard");
+        const isBusinessUser = ["admin", "staff", "manager"].includes(
+          newUser.role,
+        );
+        navigate(isBusinessUser ? "/business/dashboard" : "/");
       }, 1500);
     } catch (error: any) {
       console.error("Registration error:", error);
@@ -423,7 +430,6 @@ const Register = () => {
           <Button
             type="button"
             variant="outlined"
-            colorScheme="undefined"
             fullWidth
             size="lg"
             onClick={handleGoogleSignUp}

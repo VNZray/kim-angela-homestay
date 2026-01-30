@@ -29,8 +29,8 @@ export default function ProtectedRoute({
       ? requiredRole
       : [requiredRole];
     if (!allowedRoles.includes(user.role)) {
-      // User doesn't have permission, redirect to home
-      return <Navigate to="/" replace />;
+      // User doesn't have permission, redirect to unauthorized page
+      return <Navigate to="/auth/unauthorized" replace />;
     }
   }
 

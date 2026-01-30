@@ -37,7 +37,7 @@ User Signs Up/Logs In
          ↓
 Firebase Authentication
          ↓
-Fetch Role from Supabase (user_roles table)
+Fetch Role from Supabase (users table)
          ↓
 User Object Created with Role
          ↓
@@ -48,11 +48,11 @@ Access Control Applied
 
 - When a new user registers, they are automatically assigned the **tourist** role
 - Admins can change user roles through the User Management UI
-- Roles are stored in Supabase `user_roles` table
+- Roles are stored in Supabase `users` table
 
 ### 3. Database Structure
 
-**Table: `user_roles`**
+**Table: `users`**
 
 ```sql
 - id (UUID)
@@ -72,15 +72,15 @@ Access Control Applied
 
    Execute the SQL file at:
    ```
-   frontend/src/supabase/migrations/001_user_roles.sql
+   frontend/src/supabase/migrations/APPLY_THIS_TO_SUPABASE.sql
    ```
 
 2. **Create Your First Admin**
 
-   After creating a Firebase account, update the `user_roles` table:
+   After creating a Firebase account, update the `users` table if needed:
 
    ```sql
-   UPDATE user_roles
+   UPDATE users
    SET role = 'admin'
    WHERE firebase_uid = 'YOUR_FIREBASE_UID';
    ```
@@ -216,7 +216,7 @@ Menu items can be restricted by role:
 
 1. **Via Supabase Dashboard:**
    ```sql
-   UPDATE user_roles
+   UPDATE users
    SET role = 'admin'
    WHERE email = 'user@example.com';
    ```
@@ -232,7 +232,7 @@ Menu items can be restricted by role:
 
 ```sql
 -- Promote all staff to managers
-UPDATE user_roles
+UPDATE users
 SET role = 'manager'
 WHERE role = 'staff';
 ```
@@ -241,7 +241,7 @@ WHERE role = 'staff';
 
 ```sql
 SELECT role, COUNT(*) as count
-FROM user_roles
+FROM users
 GROUP BY role
 ORDER BY count DESC;
 ```
@@ -252,7 +252,7 @@ ORDER BY count DESC;
 
 1. Check user role in database:
    ```sql
-   SELECT * FROM user_roles WHERE email = 'user@example.com';
+   SELECT * FROM users WHERE email = 'user@example.com';
    ```
 
 2. Verify user is logged in:
@@ -285,7 +285,7 @@ Your previous system had all Firebase users as "tourists". With this update:
 
 ## Next Steps
 
-1. **Run the migration SQL** to create `user_roles` table
+1. **Run the migration SQL** to create `users` table
 2. **Create your first admin** user
 3. **Test the User Management UI** at `/business/users`
 4. **Add role checks** to sensitive features
@@ -299,7 +299,7 @@ Your previous system had all Firebase users as "tourists". With this update:
 - ✅ `routes/ProtectedRoute.tsx` - Supports role-based protection
 - ✅ `components/Sidebar.tsx` - Filters menu by role
 - ✅ `pages/Business/UserManagement.tsx` - Admin UI for managing roles
-- ✅ `supabase/migrations/001_user_roles.sql` - Database schema
+- ✅ `supabase/migrations/APPLY_THIS_TO_SUPABASE.sql` - Database schema
 
 ## Support
 
