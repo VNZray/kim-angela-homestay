@@ -24,11 +24,7 @@ const PagePlaceholder = ({ title }: { title: string }) => (
   </Box>
 );
 
-function RedirectNonTourist({
-  children,
-}: {
-  children: React.ReactElement;
-}) {
+function RedirectNonTourist({ children }: { children: React.ReactElement }) {
   const { user, loading } = useAuth();
 
   if (loading) {
