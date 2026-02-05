@@ -1,55 +1,21 @@
 import { getColors } from "@/utils/Colors";
-import { Favorite, People } from "@mui/icons-material";
-import { Box, Grid, useColorScheme } from "@mui/joy";
-import RoomCard from "../cards/RoomCard";
+import { Box, useColorScheme } from "@mui/joy";
 import Container from "../Container";
 import SectionHeader from "../SectionHeader";
 import Button from "../ui/Button";
+import RoomList from "../room-components/RoomList";
+import { useNavigate } from "react-router-dom";
 
 /**
  * Featured Rooms Section
- * Displays room options with hover effects and interactive cards
+ * Displays featured room options with hover effects and interactive cards
  * Mobile: Horizontal scroll, Desktop: Grid layout
+ * Now uses real data from the database
  */
 const FeaturedRooms = () => {
   const { mode } = useColorScheme();
   const themeColors = getColors(mode);
-  const rooms = [
-    {
-      title: "Family Room",
-      icon: <People />,
-      description: "Spacious room perfect for families with children",
-      capacity: "4-6 persons",
-      features: [
-        "Queen bed + Single beds",
-        "Private bathroom",
-        "Air conditioning",
-      ],
-      price: "₱2,500/night",
-      image:
-        "https://images.unsplash.com/photo-1611892440504-42a792e24d32?q=80&w=2070",
-    },
-    {
-      title: "Couple's Room",
-      icon: <Favorite />,
-      description: "Intimate and romantic setting for two",
-      capacity: "2 persons",
-      features: ["Queen bed", "Private bathroom", "Balcony with view"],
-      price: "₱1,800/night",
-      image:
-        "https://images.unsplash.com/photo-1590490360182-c33d57733427?q=80&w=2074",
-    },
-    {
-      title: "Deluxe Room",
-      icon: <People />,
-      description: "Premium comfort with modern amenities",
-      capacity: "2-4 persons",
-      features: ["King bed", "Mini fridge", "Mountain view"],
-      price: "₱3,200/night",
-      image:
-        "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?q=80&w=2070",
-    },
-  ];
+  const navigate = useNavigate();
 
   return (
     <Box
@@ -68,36 +34,17 @@ const FeaturedRooms = () => {
           subtitle="Choose from our carefully designed rooms that suit your needs"
         />
 
-        {/* Rooms Grid */}
-        <Grid
-          sm={12}
-          md={10}
-          lg={10}
-          spacing={{ xs: 3, md: 4 }}
-          container
-          sx={{
-            justifyContent: "center",
-            position: "relative",
-          }}
-        >
-          {rooms.map((room, index) => (
-            <Grid key={index} xs={12} sm={12} md={6} lg={6} xl={4}>
-              <RoomCard
-                title={room.title}
-                description={room.description}
-                capacity={room.capacity}
-                features={room.features}
-                price={room.price}
-                image={room.image}
-                buttonText="Book Now"
-              />
-            </Grid>
-          ))}
-        </Grid>
+        {/* Display up to 3 featured rooms */}
+        <RoomList limit={3} showBookButton={true} />
 
         {/* View All Button */}
         <Box sx={{ textAlign: "center", mt: { xs: 6, md: 8 } }}>
-          <Button variant="outlined" colorScheme="primary" sx={{ px: 6 }}>
+          <Button
+            variant="outlined"
+            colorScheme="primary"
+            sx={{ px: 6 }}
+            onClick={() => navigate("/rooms")}
+          >
             View All Rooms
           </Button>
         </Box>

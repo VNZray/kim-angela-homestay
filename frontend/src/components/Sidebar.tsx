@@ -1,49 +1,35 @@
-import * as React from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "@/context/AuthContext";
 import {
+  Avatar,
   Box,
+  IconButton,
   List,
   ListItem,
   ListItemButton,
   ListItemContent,
-  Typography,
   Sheet,
-  IconButton,
-  Avatar,
   Tooltip,
+  Typography,
 } from "@mui/joy";
-import { useAuth } from "@/context/AuthContext";
+import * as React from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 // Icons
+import { Logout } from "@mui/icons-material";
 import DashboardIcon from "@mui/icons-material/Dashboard";
-import ApprovalIcon from "@mui/icons-material/FactCheck";
-import RoomServiceIcon from "@mui/icons-material/RoomService";
 import GroupIcon from "@mui/icons-material/Group";
-import SettingsIcon from "@mui/icons-material/Settings";
-import HotelIcon from "@mui/icons-material/Hotel";
-import StoreIcon from "@mui/icons-material/Store";
-import EventIcon from "@mui/icons-material/Event";
-import TourIcon from "@mui/icons-material/Map";
-import PersonIcon from "@mui/icons-material/Person";
 import KeyboardArrowDown from "@mui/icons-material/KeyboardArrowDown";
 import MenuOpenIcon from "@mui/icons-material/MenuOpen";
-import { Logout } from "@mui/icons-material";
+import PersonIcon from "@mui/icons-material/Person";
+import SettingsIcon from "@mui/icons-material/Settings";
 
 // Newly added icons for the specific layouts
-import AssessmentIcon from "@mui/icons-material/Assessment"; // Reports
-import ReceiptLongIcon from "@mui/icons-material/ReceiptLong"; // Transactions
-import CalendarMonthIcon from "@mui/icons-material/CalendarMonth"; // Bookings
-import StorefrontIcon from "@mui/icons-material/Storefront"; // Business Profile
-import CampaignIcon from "@mui/icons-material/Campaign"; // Promotions
-import BedIcon from "@mui/icons-material/Bed"; // Manage Rooms
-import CardMembershipIcon from "@mui/icons-material/CardMembership"; // Subscription
-import StarIcon from "@mui/icons-material/Star"; // Reviews
-import ShoppingBagIcon from "@mui/icons-material/ShoppingBag"; // Store (Parent)
-import Inventory2Icon from "@mui/icons-material/Inventory2"; // Products
-import CategoryIcon from "@mui/icons-material/Category"; // Categories
-import BuildIcon from "@mui/icons-material/Build"; // Services (Store)
-import ShoppingCartIcon from "@mui/icons-material/ShoppingCart"; // Orders
-import PercentIcon from "@mui/icons-material/Percent"; // Discount
 import { colors } from "@/utils/Colors";
+import BedIcon from "@mui/icons-material/Bed"; // Manage Rooms
+import CalendarMonthIcon from "@mui/icons-material/CalendarMonth"; // Bookings
+import CampaignIcon from "@mui/icons-material/Campaign"; // Promotions
+import CardMembershipIcon from "@mui/icons-material/CardMembership"; // Subscription
+import ReceiptLongIcon from "@mui/icons-material/ReceiptLong"; // Transactions
+import StarIcon from "@mui/icons-material/Star"; // Reviews
 
 interface SidebarProps {
   isMobile: boolean;
@@ -55,75 +41,11 @@ type MenuItem = {
   icon: React.ReactElement;
   path?: string;
   children?: { title: string; path: string; icon: React.ReactElement }[];
-  requiredRole?: "admin" | "manager" | "staff"; // Optional: restrict menu item to specific roles
+  requiredRole?: "admin" | "owner" | "business"; // Optional: restrict menu item to specific roles
 };
 
-// Define allowed roles for type safety
-type Role = "admin" | "superadmin" | "owner" | "business";
-// You can change this to "business" to see the other layouts
-const CURRENT_ROLE: Role = "owner";
-// If role is business, define type: "accommodation" or "shop"
-const BUSINESS_TYPE = "accommodation";
-
-const tourism = "/tourism";
 const business = "/business";
 const BUSINESS_NAME = "Kim Angela Homestay";
-
-// --- 1. ADMIN (TOURISM) MENU STRUCTURE ---
-const adminMenuItems: MenuItem[] = [
-  {
-    title: "Dashboard",
-    icon: <DashboardIcon />,
-    path: `${tourism}/dashboard`,
-  },
-  { title: "Approval", icon: <ApprovalIcon />, path: `${tourism}/approval` },
-  {
-    title: "Services",
-    icon: <RoomServiceIcon />,
-    children: [
-      {
-        title: "Tourist Spot",
-        path: `${tourism}/services/spots`,
-        icon: <TourIcon />,
-      },
-      {
-        title: "Event",
-        path: `${tourism}/services/events`,
-        icon: <EventIcon />,
-      },
-      {
-        title: "Accommodation",
-        path: `${tourism}/services/accommodations`,
-        icon: <HotelIcon />,
-      },
-      {
-        title: "Shop",
-        path: `${tourism}/services/shops`,
-        icon: <StoreIcon />,
-      },
-    ],
-  },
-  {
-    title: "Reports",
-    icon: <AssessmentIcon />,
-    path: `${tourism}/reports`,
-  },
-  {
-    title: "Manage Tourism Staff",
-    icon: <GroupIcon />,
-    path: `${tourism}/users/staffs`,
-  },
-  {
-    title: "Profile",
-    icon: <PersonIcon />,
-    path: `${tourism}/profile`,
-  },
-  {
-    title: "Settings",
-    path: `${tourism}/settings`,
-    icon: <SettingsIcon />,
-  },
-];
 
 // --- 2. ACCOMMODATION (BUSINESS) MENU STRUCTURE ---
 const accommodationMenuItems: MenuItem[] = [
@@ -141,11 +63,6 @@ const accommodationMenuItems: MenuItem[] = [
     title: "Bookings",
     icon: <CalendarMonthIcon />,
     path: `${business}/bookings`,
-  },
-  {
-    title: "Business Profile",
-    icon: <StorefrontIcon />,
-    path: `${business}/profile`,
   },
   {
     title: "Manage Promotions",
@@ -185,81 +102,6 @@ const accommodationMenuItems: MenuItem[] = [
   },
 ];
 
-// --- 3. SHOP (BUSINESS) MENU STRUCTURE ---
-const shopMenuItems: MenuItem[] = [
-  {
-    title: "Dashboard",
-    icon: <DashboardIcon />,
-    path: `${business}/dashboard`,
-  },
-  {
-    title: "Business Profile",
-    icon: <StorefrontIcon />,
-    path: `${business}/profile`,
-  },
-  {
-    title: "Manage Promotions",
-    icon: <CampaignIcon />,
-    path: `${business}/promotions`,
-  },
-  {
-    title: "Subscription",
-    icon: <CardMembershipIcon />,
-    path: `${business}/subscription`,
-  },
-  {
-    title: "Store",
-    icon: <ShoppingBagIcon />,
-    children: [
-      {
-        title: "Products",
-        path: `${business}/store/products`,
-        icon: <Inventory2Icon />,
-      },
-      {
-        title: "Categories",
-        path: `${business}/store/categories`,
-        icon: <CategoryIcon />,
-      },
-      {
-        title: "Services",
-        path: `${business}/store/services`,
-        icon: <BuildIcon />,
-      },
-      {
-        title: "Orders",
-        path: `${business}/store/orders`,
-        icon: <ShoppingCartIcon />,
-      },
-      {
-        title: "Discount",
-        path: `${business}/store/discount`,
-        icon: <PercentIcon />,
-      },
-      {
-        title: "Settings",
-        path: `${business}/store/settings`,
-        icon: <SettingsIcon />,
-      },
-    ],
-  },
-  {
-    title: "Reviews & Ratings",
-    icon: <StarIcon />,
-    path: `${business}/reviews`,
-  },
-  {
-    title: "Manage Staff",
-    icon: <GroupIcon />,
-    path: `${business}/staff`,
-  },
-  {
-    title: "Settings",
-    icon: <SettingsIcon />,
-    path: `${business}/settings`,
-  },
-];
-
 export default function Sidebar({
   isMobile,
   closeMobileSidebar,
@@ -267,22 +109,10 @@ export default function Sidebar({
   const location = useLocation();
   const navigate = useNavigate();
   const { user, logout } = useAuth();
-  const [openMenus, setOpenMenus] = React.useState<Record<string, boolean>>({
-    Services: true,
-    Store: true, // Open Store menu by default for Shop view
-  });
+  const [openMenus, setOpenMenus] = React.useState<Record<string, boolean>>({});
 
-  // Determine which menu to render based on Role and Business Type
-  let menuToRender;
-  if (CURRENT_ROLE !== "admin" && CURRENT_ROLE !== "superadmin") {
-    if (BUSINESS_TYPE === "accommodation") {
-      menuToRender = accommodationMenuItems;
-    } else {
-      menuToRender = shopMenuItems;
-    }
-  } else {
-    menuToRender = adminMenuItems;
-  }
+  // Use actual user role from auth context (defaults to accommodation menu)
+  const menuToRender = accommodationMenuItems;
 
   // Filter menu items based on user role
   const filteredMenu = menuToRender.filter((item) => {
@@ -291,15 +121,8 @@ export default function Sidebar({
   });
 
   // Separate main navigation from settings so Settings can be placed in the footer
-  const settingsItem = (menuToRender as MenuItem[]).find(
-    (item) => item.title === "Settings",
-  );
-
-  const settingsPath =
-    settingsItem?.path ??
-    (CURRENT_ROLE === "admin" || CURRENT_ROLE === "superadmin"
-      ? `${tourism}/settings`
-      : `${business}/settings`);
+  const settingsItem = menuToRender.find((item) => item.title === "Settings");
+  const settingsPath = settingsItem?.path ?? `${business}/settings`;
 
   const mainMenuItems = filteredMenu.filter(
     (item) => item.title !== "Settings",

@@ -24,30 +24,3 @@ export interface SupabaseUser {
     is_online: boolean | null;
     last_login: string | null;
 }
-
-// Admin profile table (public.admin)
-export interface AdminProfile {
-    id: string;
-    user_id: string;
-    first_name: string | null;
-    middle_name: string | null;
-    last_name: string | null;
-    phone_number: string | null;
-    created_at: string;
-}
-
-// Guest profile table (public.guest)
-export interface GuestProfile {
-    id: string;
-    user_id: string;
-    first_name: string | null;
-    middle_name: string | null;
-    last_name: string | null;
-    age: number | null;
-    birthdate: string | null;
-    barangay_id: string | null;
-    nationality: string | null;
-    gender: string | null;
-    created_at: string;
-    address: string | null;
-}

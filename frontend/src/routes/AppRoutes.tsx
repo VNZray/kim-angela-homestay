@@ -9,6 +9,7 @@ import Layout from "../layouts/Layout";
 import About from "../pages/About";
 import { AccommodationDashboard } from "../pages/Business/Dashboard";
 import UserManagement from "../pages/Business/UserManagement";
+import ManageRooms from "../pages/Business/ManageRooms";
 import Home from "../pages/Home";
 import NotFound from "../pages/NotFound";
 import Unauthorized from "../pages/Unauthorized";
@@ -91,10 +92,7 @@ export default function AppRoutes() {
             path="bookings"
             element={<PagePlaceholder title="Bookings" />}
           />
-          <Route
-            path="rooms"
-            element={<PagePlaceholder title="Manage Rooms" />}
-          />
+          <Route path="rooms" element={<ManageRooms />} />
           <Route
             path="promotions"
             element={<PagePlaceholder title="Manage Promotions" />}
