@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Box, AspectRatio, Chip, Divider } from "@mui/joy";
+import { Box, AspectRatio, Chip, Tabs, TabList, Tab, TabPanel } from "@mui/joy";
 import {
   ArrowBack,
   Edit,
@@ -8,23 +8,33 @@ import {
   Hotel,
   AttachMoney,
   Schedule,
-  Layers,
-  Maximize,
   People,
+  Maximize,
+  Star,
+  CalendarMonth,
 } from "@mui/icons-material";
+import { useColorScheme } from "@mui/joy/styles";
 import PageContainer from "@/components/PageContainer";
 import Typography from "@/components/ui/Typography";
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 import Alert from "@/components/ui/Alert";
+import IconButton from "@/components/ui/IconButton";
 import Loading from "@/components/Loading";
+import Calendar from "@/components/ui/Calendar";
+import type { CalendarEvent } from "@/components/ui/Calendar";
 import RoomModal from "./components/RoomModal";
 import {
   getRoomById,
   updateRoom,
   deleteRoom,
 } from "@/services/room/RoomService";
+import { getBookingsByRoomId } from "@/services/booking/BookingService";
+import { getRoomReviewsByRoomId } from "@/services/reviews/RoomReviewService";
+import { getColors } from "@/utils/Colors";
 import type { Room } from "@/types/Room";
+import type { Booking } from "@/types/Booking";
+import type { RoomReview } from "@/types/RoomReview";
 
 const PLACEHOLDER_IMAGE =
   "https://placehold.co/800x500/e2e8f0/64748b?text=No+Room+Image";
@@ -32,10 +42,15 @@ const PLACEHOLDER_IMAGE =
 export default function RoomProfile() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { mode } = useColorScheme();
+  const colors = getColors(mode as "light" | "dark");
 
   const [room, setRoom] = useState<Room | null>(null);
+  const [bookings, setBookings] = useState<Booking[]>([]);
+  const [reviews, setReviews] = useState<RoomReview[]>([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [activeTab, setActiveTab] = useState(0);
 
   // Modal state
   const [editModalOpen, setEditModalOpen] = useState(false);
@@ -53,8 +68,14 @@ export default function RoomProfile() {
     if (!id) return;
     try {
       setLoading(true);
-      const data = await getRoomById(id);
-      setRoom(data);
+      const [roomData, bookingData, reviewData] = await Promise.all([
+        getRoomById(id),
+        getBookingsByRoomId(id),
+        getRoomReviewsByRoomId(id),
+      ]);
+      setRoom(roomData);
+      setBookings(bookingData);
+      setReviews(reviewData);
     } catch {
       setAlert({
         open: true,
@@ -114,6 +135,40 @@ export default function RoomProfile() {
     }
   };
 
+  // Convert bookings to calendar events
+  const calendarEvents: CalendarEvent[] = bookings.flatMap((booking) => {
+    const events: CalendarEvent[] = [];
+    const start = new Date(booking.check_in_date);
+    const end = new Date(booking.check_out_date);
+    const statusMap: Record<string, CalendarEvent["status"]> = {
+      reserved: "Reserved",
+      pending: "Reserved",
+      checked_in: "Occupied",
+      checked_out: "Available",
+      cancelled: "Available",
+    };
+    const status = statusMap[booking.booking_status] ?? "Reserved";
+    if (status === "Available") return events;
+
+    for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+      events.push({
+        date: new Date(d),
+        status,
+        label: `${booking.booking_status} — ${booking.booking_type}`,
+        bookingId: booking.id,
+      });
+    }
+    return events;
+  });
+
+  // Average rating
+  const avgRating =
+    reviews.length > 0
+      ? (
+          reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
+        ).toFixed(1)
+      : null;
+
   if (loading) {
     return (
       <PageContainer>
@@ -149,62 +204,81 @@ export default function RoomProfile() {
     );
   }
 
-  const details = [
+  const statCards = [
     {
-      icon: <People sx={{ fontSize: 20 }} />,
+      icon: <Hotel sx={{ fontSize: 22 }} />,
+      label: "Room Type",
+      value: room.room_type ?? "—",
+    },
+    {
+      icon: <People sx={{ fontSize: 22 }} />,
       label: "Capacity",
       value: room.capacity ? `${room.capacity} persons` : "—",
     },
     {
-      icon: <Maximize sx={{ fontSize: 20 }} />,
+      icon: <Maximize sx={{ fontSize: 22 }} />,
       label: "Room Size",
       value: room.room_size ?? "—",
     },
     {
-      icon: <Layers sx={{ fontSize: 20 }} />,
-      label: "Floor",
-      value: room.floor ? `Floor ${room.floor}` : "—",
-    },
-    {
-      icon: <AttachMoney sx={{ fontSize: 20 }} />,
-      label: "Price / Night",
+      icon: <AttachMoney sx={{ fontSize: 22 }} />,
+      label: "Base Price",
       value: room.room_price ? `₱${room.room_price.toLocaleString()}` : "—",
-    },
-    {
-      icon: <Schedule sx={{ fontSize: 20 }} />,
-      label: "Per Hour Rate",
-      value: room.per_hour_rate
-        ? `₱${room.per_hour_rate.toLocaleString()}`
-        : "—",
-    },
-    {
-      icon: <Hotel sx={{ fontSize: 20 }} />,
-      label: "Room Type",
-      value: room.room_type ?? "—",
     },
   ];
 
   return (
     <PageContainer sx={{ alignItems: "stretch", justifyContent: "flex-start" }}>
-      {/* Back & Actions */}
+      {/* Header */}
       <Box
         sx={{
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
-          mb: 3,
+          mb: 2,
           flexWrap: "wrap",
           gap: 2,
         }}
       >
-        <Button
-          variant="plain"
-          colorScheme="dark"
-          startDecorator={<ArrowBack />}
-          onClick={() => navigate("/business/rooms")}
-        >
-          Back to Rooms
-        </Button>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+          <IconButton
+            variant="outlined"
+            colorScheme="dark"
+            size="sm"
+            onClick={() => navigate("/business/rooms")}
+          >
+            <ArrowBack sx={{ fontSize: 18 }} />
+          </IconButton>
+          <Box>
+            <Typography.Header color="dark" size="sm">
+              Room {room.room_number || "TBA"}
+            </Typography.Header>
+            <Box
+              sx={{ display: "flex", alignItems: "center", gap: 1, mt: 0.25 }}
+            >
+              {room.floor && (
+                <Typography.Body size="xs" color="default">
+                  Floor {room.floor}
+                </Typography.Body>
+              )}
+              {room.room_type && (
+                <Chip size="sm" variant="soft" color="warning">
+                  {room.room_type}
+                </Chip>
+              )}
+              {avgRating && (
+                <Chip
+                  size="sm"
+                  variant="soft"
+                  color="success"
+                  startDecorator={<Star sx={{ fontSize: 14 }} />}
+                >
+                  {avgRating} ({reviews.length})
+                </Chip>
+              )}
+            </Box>
+          </Box>
+        </Box>
         <Box sx={{ display: "flex", gap: 1 }}>
           <Button
             variant="outlined"
@@ -212,7 +286,7 @@ export default function RoomProfile() {
             startDecorator={<Edit sx={{ fontSize: 18 }} />}
             onClick={() => setEditModalOpen(true)}
           >
-            Edit
+            Edit Room
           </Button>
           <Button
             variant="outlined"
@@ -225,100 +299,423 @@ export default function RoomProfile() {
         </Box>
       </Box>
 
-      {/* Main Content */}
+      {/* Hero Image */}
+      <Card
+        colorScheme="light"
+        elevation={2}
+        sx={{ p: 0, overflow: "hidden", mb: 2 }}
+      >
+        <AspectRatio ratio="21/7" sx={{ minHeight: 180 }}>
+          <img
+            src={room.room_profile || PLACEHOLDER_IMAGE}
+            alt={`Room ${room.room_number}`}
+            style={{ objectFit: "cover" }}
+          />
+        </AspectRatio>
+      </Card>
+
+      {/* Stat Cards */}
       <Box
         sx={{
           display: "grid",
-          gridTemplateColumns: { xs: "1fr", md: "1.2fr 1fr" },
-          gap: 3,
+          gridTemplateColumns: {
+            xs: "repeat(2, 1fr)",
+            sm: "repeat(4, 1fr)",
+          },
+          gap: 2,
+          mb: 2,
         }}
       >
-        {/* Left: Image Section */}
-        <Card
-          colorScheme="light"
-          elevation={2}
-          sx={{ p: 0, overflow: "hidden" }}
-        >
-          <AspectRatio ratio="16/10">
-            <img
-              src={room.room_profile || PLACEHOLDER_IMAGE}
-              alt={`Room ${room.room_number}`}
-              style={{ objectFit: "cover" }}
-            />
-          </AspectRatio>
-        </Card>
-
-        {/* Right: Info Section */}
-        <Card colorScheme="light" elevation={2} sx={{ p: 3 }}>
-          {/* Title */}
-          <Box
+        {statCards.map((stat) => (
+          <Card
+            key={stat.label}
+            colorScheme="light"
+            elevation={1}
             sx={{
+              p: 2,
               display: "flex",
+              flexDirection: "row",
               alignItems: "center",
               gap: 1.5,
-              mb: 1,
             }}
           >
-            <Typography.Header color="dark" size="sm">
-              Room {room.room_number || "TBA"}
-            </Typography.Header>
-            {room.room_type && (
-              <Chip size="sm" variant="solid" color="warning">
-                {room.room_type}
-              </Chip>
-            )}
-          </Box>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                width: 40,
+                height: 40,
+                borderRadius: "10px",
+                bgcolor: `${colors.primary}15`,
+                color: colors.primary,
+                flexShrink: 0,
+              }}
+            >
+              {stat.icon}
+            </Box>
+            <Box>
+              <Typography.Label size="xs" color="default">
+                {stat.label}
+              </Typography.Label>
+              <Typography.CardTitle size="sm" color="dark">
+                {stat.value}
+              </Typography.CardTitle>
+            </Box>
+          </Card>
+        ))}
+      </Box>
 
-          {/* Price Highlight */}
-          <Typography.CardTitle size="md" color="primary" sx={{ mb: 2 }}>
-            ₱{room.room_price?.toLocaleString() ?? "—"}
-            <Typography.Body size="sm" color="default">
-              {" "}
-              / night
-            </Typography.Body>
-          </Typography.CardTitle>
+      {/* Tabs */}
+      <Tabs
+        value={activeTab}
+        onChange={(_e, val) => setActiveTab(val as number)}
+        sx={{ borderRadius: "12px", bgcolor: "transparent" }}
+      >
+        <TabList
+          sx={{
+            gap: 1,
+            [`& .MuiTab-root`]: {
+              borderRadius: "8px",
+              fontWeight: 600,
+              fontSize: "0.85rem",
+            },
+          }}
+        >
+          <Tab>Overview</Tab>
+          <Tab>Bookings</Tab>
+          <Tab>Pricing</Tab>
+          <Tab>Photos</Tab>
+          <Tab>Reviews</Tab>
+        </TabList>
 
-          <Divider sx={{ my: 2 }} />
-
-          {/* Details Grid */}
+        {/* ===== OVERVIEW TAB ===== */}
+        <TabPanel value={0} sx={{ p: 0, pt: 2 }}>
           <Box
             sx={{
               display: "grid",
-              gridTemplateColumns: "1fr 1fr",
-              gap: 2.5,
+              gridTemplateColumns: { xs: "1fr", md: "1fr 360px" },
+              gap: 2,
             }}
           >
-            {details.map((item) => (
-              <Box
-                key={item.label}
-                sx={{ display: "flex", alignItems: "flex-start", gap: 1.5 }}
+            {/* Description */}
+            <Card colorScheme="light" elevation={1} sx={{ p: 3 }}>
+              <Typography.CardTitle size="sm" color="dark" sx={{ mb: 1.5 }}>
+                Description
+              </Typography.CardTitle>
+              <Typography.Body
+                color="default"
+                size="sm"
+                sx={{ lineHeight: 1.7 }}
               >
-                <Box sx={{ color: "var(--joy-palette-primary-500)", mt: 0.25 }}>
-                  {item.icon}
-                </Box>
-                <Box>
-                  <Typography.Label size="xs" color="default">
-                    {item.label}
-                  </Typography.Label>
-                  <Typography.Body size="sm" color="dark">
-                    {item.value}
-                  </Typography.Body>
-                </Box>
-              </Box>
-            ))}
-          </Box>
-        </Card>
-      </Box>
+                {room.description || "No description available for this room."}
+              </Typography.Body>
+            </Card>
 
-      {/* Description Section */}
-      <Card colorScheme="light" elevation={1} sx={{ p: 3, mt: 3 }}>
-        <Typography.CardTitle size="sm" color="dark" sx={{ mb: 1.5 }}>
-          Description
-        </Typography.CardTitle>
-        <Typography.Body color="default" size="sm">
-          {room.description || "No description available for this room."}
-        </Typography.Body>
-      </Card>
+            {/* Calendar Sidebar */}
+            <Card colorScheme="light" elevation={1} sx={{ p: 2 }}>
+              <Box
+                sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1.5 }}
+              >
+                <CalendarMonth sx={{ fontSize: 20, color: colors.primary }} />
+                <Typography.CardTitle size="sm" color="dark">
+                  Availability
+                </Typography.CardTitle>
+              </Box>
+              <Calendar events={calendarEvents} interactive={false} />
+            </Card>
+          </Box>
+        </TabPanel>
+
+        {/* ===== BOOKINGS TAB ===== */}
+        <TabPanel value={1} sx={{ p: 0, pt: 2 }}>
+          {bookings.length === 0 ? (
+            <Card
+              colorScheme="light"
+              elevation={1}
+              sx={{ p: 4, textAlign: "center" }}
+            >
+              <Typography.Body color="default" size="sm">
+                No bookings found for this room.
+              </Typography.Body>
+            </Card>
+          ) : (
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5 }}>
+              {bookings.map((booking) => {
+                const statusColor: Record<
+                  string,
+                  "success" | "warning" | "primary" | "neutral" | "danger"
+                > = {
+                  reserved: "primary",
+                  pending: "warning",
+                  checked_in: "success",
+                  checked_out: "neutral",
+                  cancelled: "danger",
+                };
+                return (
+                  <Card
+                    key={booking.id}
+                    colorScheme="light"
+                    elevation={1}
+                    sx={{ p: 2 }}
+                  >
+                    <Box
+                      sx={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        flexWrap: "wrap",
+                        gap: 1,
+                      }}
+                    >
+                      <Box>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 1,
+                            mb: 0.5,
+                          }}
+                        >
+                          <Typography.CardTitle size="sm" color="dark">
+                            {booking.check_in_date} → {booking.check_out_date}
+                          </Typography.CardTitle>
+                          <Chip
+                            size="sm"
+                            variant="soft"
+                            color={
+                              statusColor[booking.booking_status] ?? "neutral"
+                            }
+                          >
+                            {booking.booking_status}
+                          </Chip>
+                        </Box>
+                        <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
+                          <Typography.Label size="xs" color="default">
+                            {booking.booking_type}
+                          </Typography.Label>
+                          <Typography.Label size="xs" color="default">
+                            {booking.pax} guest{booking.pax > 1 ? "s" : ""}
+                          </Typography.Label>
+                          <Typography.Label size="xs" color="default">
+                            {booking.booking_source}
+                          </Typography.Label>
+                        </Box>
+                      </Box>
+                      <Typography.CardTitle size="sm" color="primary">
+                        ₱{booking.total_price?.toLocaleString()}
+                      </Typography.CardTitle>
+                    </Box>
+                  </Card>
+                );
+              })}
+            </Box>
+          )}
+        </TabPanel>
+
+        {/* ===== PRICING TAB ===== */}
+        <TabPanel value={2} sx={{ p: 0, pt: 2 }}>
+          <Box
+            sx={{
+              display: "grid",
+              gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" },
+              gap: 2,
+            }}
+          >
+            <Card
+              colorScheme="light"
+              elevation={1}
+              sx={{ p: 3, textAlign: "center" }}
+            >
+              <Box
+                sx={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  width: 48,
+                  height: 48,
+                  borderRadius: "12px",
+                  bgcolor: `${colors.primary}15`,
+                  color: colors.primary,
+                  mb: 1.5,
+                  mx: "auto",
+                }}
+              >
+                <AttachMoney sx={{ fontSize: 28 }} />
+              </Box>
+              <Typography.Label size="xs" color="default">
+                Per Night
+              </Typography.Label>
+              <Typography.Header size="sm" color="primary">
+                ₱{room.room_price?.toLocaleString() ?? "—"}
+              </Typography.Header>
+            </Card>
+            <Card
+              colorScheme="light"
+              elevation={1}
+              sx={{ p: 3, textAlign: "center" }}
+            >
+              <Box
+                sx={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  width: 48,
+                  height: 48,
+                  borderRadius: "12px",
+                  bgcolor: `${colors.info}15`,
+                  color: colors.info,
+                  mb: 1.5,
+                  mx: "auto",
+                }}
+              >
+                <Schedule sx={{ fontSize: 28 }} />
+              </Box>
+              <Typography.Label size="xs" color="default">
+                Per Hour
+              </Typography.Label>
+              <Typography.Header size="sm" color="dark">
+                ₱{room.per_hour_rate?.toLocaleString() ?? "—"}
+              </Typography.Header>
+            </Card>
+          </Box>
+        </TabPanel>
+
+        {/* ===== PHOTOS TAB ===== */}
+        <TabPanel value={3} sx={{ p: 0, pt: 2 }}>
+          {room.room_profile ? (
+            <Box
+              sx={{
+                display: "grid",
+                gridTemplateColumns: {
+                  xs: "1fr",
+                  sm: "repeat(2, 1fr)",
+                  md: "repeat(3, 1fr)",
+                },
+                gap: 2,
+              }}
+            >
+              <Card
+                colorScheme="light"
+                elevation={1}
+                sx={{ p: 0, overflow: "hidden" }}
+              >
+                <AspectRatio ratio="4/3">
+                  <img
+                    src={room.room_profile}
+                    alt={`Room ${room.room_number}`}
+                    style={{ objectFit: "cover" }}
+                  />
+                </AspectRatio>
+              </Card>
+            </Box>
+          ) : (
+            <Card
+              colorScheme="light"
+              elevation={1}
+              sx={{ p: 4, textAlign: "center" }}
+            >
+              <Typography.Body color="default" size="sm">
+                No photos available for this room.
+              </Typography.Body>
+            </Card>
+          )}
+        </TabPanel>
+
+        {/* ===== REVIEWS TAB ===== */}
+        <TabPanel value={4} sx={{ p: 0, pt: 2 }}>
+          {reviews.length === 0 ? (
+            <Card
+              colorScheme="light"
+              elevation={1}
+              sx={{ p: 4, textAlign: "center" }}
+            >
+              <Typography.Body color="default" size="sm">
+                No reviews yet for this room.
+              </Typography.Body>
+            </Card>
+          ) : (
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5 }}>
+              {reviews.map((review) => (
+                <Card
+                  key={review.id}
+                  colorScheme="light"
+                  elevation={1}
+                  sx={{ p: 2.5 }}
+                >
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      mb: 1,
+                    }}
+                  >
+                    <Box
+                      sx={{ display: "flex", alignItems: "center", gap: 0.5 }}
+                    >
+                      {Array.from({ length: 5 }).map((_, i) => (
+                        <Star
+                          key={i}
+                          sx={{
+                            fontSize: 16,
+                            color:
+                              i < review.rating
+                                ? colors.secondary
+                                : `${colors.dark}20`,
+                          }}
+                        />
+                      ))}
+                      <Typography.Label
+                        size="xs"
+                        color="default"
+                        sx={{ ml: 0.5 }}
+                      >
+                        {review.rating}/5
+                      </Typography.Label>
+                    </Box>
+                    <Typography.Body size="xs" color="default">
+                      {new Date(review.created_at).toLocaleDateString()}
+                    </Typography.Body>
+                  </Box>
+                  <Typography.Body
+                    size="sm"
+                    color="dark"
+                    sx={{ lineHeight: 1.6 }}
+                  >
+                    {review.feedback || "No feedback provided."}
+                  </Typography.Body>
+                  {review.photos && review.photos.length > 0 && (
+                    <Box sx={{ display: "flex", gap: 1, mt: 1.5 }}>
+                      {review.photos.map((photo, idx) => (
+                        <Box
+                          key={idx}
+                          sx={{
+                            width: 64,
+                            height: 64,
+                            borderRadius: "8px",
+                            overflow: "hidden",
+                          }}
+                        >
+                          <img
+                            src={photo}
+                            alt={`Review photo ${idx + 1}`}
+                            style={{
+                              width: "100%",
+                              height: "100%",
+                              objectFit: "cover",
+                            }}
+                          />
+                        </Box>
+                      ))}
+                    </Box>
+                  )}
+                </Card>
+              ))}
+            </Box>
+          )}
+        </TabPanel>
+      </Tabs>
 
       {/* Edit Modal */}
       <RoomModal

@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { Box } from "@mui/joy";
 import { Add } from "@mui/icons-material";
-import { useNavigate } from "react-router-dom";
 import PageContainer from "@/components/PageContainer";
 import Typography from "@/components/ui/Typography";
 import Button from "@/components/ui/Button";
@@ -19,7 +18,6 @@ import RoomModal from "./components/RoomModal";
 import RoomManagementCard from "./components/RoomManagementCard";
 
 export default function ManageRooms() {
-  const navigate = useNavigate();
   const [rooms, setRooms] = useState<Room[]>([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -116,11 +114,6 @@ export default function ManageRooms() {
     }
   };
 
-  // View Room Profile
-  const handleViewRoom = (room: Room) => {
-    navigate(`/business/rooms/${room.id}`);
-  };
-
   if (loading) {
     return (
       <PageContainer>
@@ -203,7 +196,6 @@ export default function ManageRooms() {
               room={room}
               onEdit={handleOpenEdit}
               onDelete={setDeleteTarget}
-              onView={handleViewRoom}
             />
           ))}
         </Box>

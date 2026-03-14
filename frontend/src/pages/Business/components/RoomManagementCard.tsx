@@ -1,6 +1,15 @@
-import { Box, AspectRatio, Chip } from "@mui/joy";
-import { Edit, Delete, Visibility } from "@mui/icons-material";
+import {
+  Box,
+  AspectRatio,
+  Chip,
+  Dropdown,
+  Menu,
+  MenuButton,
+  MenuItem,
+} from "@mui/joy";
+import { Edit, Delete, MoreVert } from "@mui/icons-material";
 import { Users, Layers, Maximize2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import Card from "@/components/ui/Card";
 import Typography from "@/components/ui/Typography";
 import IconButton from "@/components/ui/IconButton";
@@ -10,7 +19,6 @@ interface RoomManagementCardProps {
   room: Room;
   onEdit: (room: Room) => void;
   onDelete: (room: Room) => void;
-  onView: (room: Room) => void;
 }
 
 const PLACEHOLDER_IMAGE =
@@ -20,8 +28,13 @@ export default function RoomManagementCard({
   room,
   onEdit,
   onDelete,
-  onView,
 }: RoomManagementCardProps) {
+  const navigate = useNavigate();
+
+  const handleCardClick = () => {
+    navigate(`/business/rooms/${room.id}`);
+  };
+
   return (
     <Card
       colorScheme="light"
@@ -31,12 +44,14 @@ export default function RoomManagementCard({
         borderRadius: "12px",
         overflow: "hidden",
         transition: "all 0.3s ease",
+        cursor: "pointer",
         "&:hover": {
           transform: "translateY(-4px)",
           boxShadow: "0 8px 24px rgba(0, 0, 0, 0.12)",
         },
         p: 0,
       }}
+      onClick={handleCardClick}
     >
       {/* Room Image */}
       <Box sx={{ position: "relative" }}>
@@ -71,6 +86,41 @@ export default function RoomManagementCard({
           </Chip>
         )}
 
+        {/* 3-dot Menu */}
+        <Box
+          sx={{ position: "absolute", top: 4, right: 4 }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <Dropdown>
+            <MenuButton
+              slots={{ root: IconButton }}
+              slotProps={{
+                root: {
+                  variant: "solid" as const,
+                  size: "sm" as const,
+                  sx: {
+                    bgcolor: "rgba(0,0,0,0.5)",
+                    color: "#fff",
+                    "&:hover": { bgcolor: "rgba(0,0,0,0.7)" },
+                    minWidth: 28,
+                    minHeight: 28,
+                  },
+                },
+              }}
+            >
+              <MoreVert sx={{ fontSize: 18 }} />
+            </MenuButton>
+            <Menu placement="bottom-end" size="sm">
+              <MenuItem onClick={() => onEdit(room)}>
+                <Edit sx={{ fontSize: 16, mr: 1 }} /> Edit
+              </MenuItem>
+              <MenuItem onClick={() => onDelete(room)} color="danger">
+                <Delete sx={{ fontSize: 16, mr: 1 }} /> Delete
+              </MenuItem>
+            </Menu>
+          </Dropdown>
+        </Box>
+
         {/* Floor Badge */}
         {room.floor && (
           <Chip
@@ -79,7 +129,7 @@ export default function RoomManagementCard({
             color="neutral"
             sx={{
               position: "absolute",
-              top: 8,
+              bottom: 8,
               right: 8,
             }}
           >
@@ -147,7 +197,7 @@ export default function RoomManagementCard({
         </Box>
 
         {/* Price */}
-        <Box sx={{ mb: 1.5 }}>
+        <Box>
           <Typography.CardTitle size="sm" color="primary">
             ₱{room.room_price?.toLocaleString() ?? "—"}
             <Typography.Body size="xs" color="default">
@@ -160,43 +210,6 @@ export default function RoomManagementCard({
               ₱{room.per_hour_rate.toLocaleString()} / hour
             </Typography.Label>
           )}
-        </Box>
-
-        {/* Actions */}
-        <Box
-          sx={{
-            display: "flex",
-            gap: 1,
-            justifyContent: "flex-end",
-            borderTop: "1px solid",
-            borderColor: "divider",
-            pt: 1.5,
-          }}
-        >
-          <IconButton
-            variant="soft"
-            colorScheme="info"
-            size="sm"
-            onClick={() => onView(room)}
-          >
-            <Visibility sx={{ fontSize: 18 }} />
-          </IconButton>
-          <IconButton
-            variant="soft"
-            colorScheme="primary"
-            size="sm"
-            onClick={() => onEdit(room)}
-          >
-            <Edit sx={{ fontSize: 18 }} />
-          </IconButton>
-          <IconButton
-            variant="soft"
-            colorScheme="error"
-            size="sm"
-            onClick={() => onDelete(room)}
-          >
-            <Delete sx={{ fontSize: 18 }} />
-          </IconButton>
         </Box>
       </Box>
     </Card>
