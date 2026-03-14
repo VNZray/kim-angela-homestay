@@ -10,6 +10,10 @@ import About from "../pages/About";
 import { AccommodationDashboard } from "../pages/Business/Dashboard";
 import UserManagement from "../pages/Business/UserManagement";
 import ManageRooms from "../pages/Business/ManageRooms";
+import RoomProfile from "../pages/Business/RoomProfile";
+import Bookings from "../pages/Business/Bookings";
+import Transactions from "../pages/Business/Transactions";
+import ManageStaff from "../pages/Business/ManageStaff";
 import Home from "../pages/Home";
 import NotFound from "../pages/NotFound";
 import Unauthorized from "../pages/Unauthorized";
@@ -84,23 +88,15 @@ export default function AppRoutes() {
 
           <Route index element={<AccommodationDashboard />} />
           <Route path="dashboard" element={<AccommodationDashboard />} />
-          <Route
-            path="transactions"
-            element={<PagePlaceholder title="Transactions" />}
-          />
-          <Route
-            path="bookings"
-            element={<PagePlaceholder title="Bookings" />}
-          />
+          <Route path="transactions" element={<Transactions />} />
+          <Route path="bookings" element={<Bookings />} />
           <Route path="rooms" element={<ManageRooms />} />
+          <Route path="rooms/:id" element={<RoomProfile />} />
           <Route
             path="promotions"
             element={<PagePlaceholder title="Manage Promotions" />}
           />
-          <Route
-            path="staff"
-            element={<PagePlaceholder title="Manage Staff" />}
-          />
+          <Route path="staff" element={<ManageStaff />} />
 
           {/* User Management - Admin Only */}
           <Route

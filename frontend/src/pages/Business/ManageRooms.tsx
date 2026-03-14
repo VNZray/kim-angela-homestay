@@ -1,24 +1,43 @@
 import { useState, useEffect } from "react";
-import { Box, IconButton, Stack, Alert as JoyAlert } from "@mui/joy";
-import { Add, Edit, Delete, CheckCircle, Warning } from "@mui/icons-material";
+import { Box } from "@mui/joy";
+import { Add } from "@mui/icons-material";
+import { useNavigate } from "react-router-dom";
 import PageContainer from "@/components/PageContainer";
 import Typography from "@/components/ui/Typography";
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
-import { getAllRooms, deleteRoom } from "@/services/room/RoomService";
+import Alert from "@/components/ui/Alert";
+import {
+  getAllRooms,
+  createRoom,
+  updateRoom,
+  deleteRoom,
+} from "@/services/room/RoomService";
 import type { Room } from "@/types/Room";
 import Loading from "@/components/Loading";
+import RoomModal from "./components/RoomModal";
+import RoomManagementCard from "./components/RoomManagementCard";
 
-/**
- * ManageRooms Page
- * Business page for managing accommodation rooms
- * Allows business owners to add, edit, and delete rooms
- */
 export default function ManageRooms() {
+  const navigate = useNavigate();
   const [rooms, setRooms] = useState<Room[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+
+  // Modal state
+  const [modalOpen, setModalOpen] = useState(false);
+  const [editingRoom, setEditingRoom] = useState<Room | null>(null);
+
+  // Delete confirm state
+  const [deleteTarget, setDeleteTarget] = useState<Room | null>(null);
+
+  // Alert state
+  const [alert, setAlert] = useState<{
+    open: boolean;
+    type: "success" | "error";
+    title: string;
+    message: string;
+  }>({ open: false, type: "success", title: "", message: "" });
 
   useEffect(() => {
     fetchRooms();
@@ -29,41 +48,77 @@ export default function ManageRooms() {
       setLoading(true);
       const data = await getAllRooms();
       setRooms(data);
-    } catch (err) {
-      console.error("Error fetching rooms:", err);
-      setError("Failed to load rooms. Please try again later.");
+    } catch {
+      showAlert("error", "Error", "Failed to load rooms. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this room?")) {
-      return;
-    }
+  const showAlert = (
+    type: "success" | "error",
+    title: string,
+    message: string,
+  ) => {
+    setAlert({ open: true, type, title, message });
+  };
 
+  // Add Room
+  const handleOpenAdd = () => {
+    setEditingRoom(null);
+    setModalOpen(true);
+  };
+
+  // Edit Room
+  const handleOpenEdit = (room: Room) => {
+    setEditingRoom(room);
+    setModalOpen(true);
+  };
+
+  // Submit (Add or Edit)
+  const handleSubmit = async (payload: Omit<Room, "id">) => {
     try {
-      await deleteRoom(id);
-      setSuccess("Room deleted successfully!");
-      fetchRooms(); // Refresh the list
-      setTimeout(() => setSuccess(null), 3000);
-    } catch (err) {
-      console.error("Error deleting room:", err);
-      setError("Failed to delete room. Please try again.");
-      setTimeout(() => setError(null), 3000);
+      setSubmitting(true);
+      if (editingRoom) {
+        await updateRoom(editingRoom.id, payload);
+        showAlert("success", "Updated", "Room updated successfully!");
+      } else {
+        await createRoom(payload);
+        showAlert("success", "Created", "Room added successfully!");
+      }
+      setModalOpen(false);
+      setEditingRoom(null);
+      await fetchRooms();
+    } catch {
+      showAlert(
+        "error",
+        "Error",
+        editingRoom ? "Failed to update room." : "Failed to add room.",
+      );
+    } finally {
+      setSubmitting(false);
     }
   };
 
-  const handleEdit = (room: Room) => {
-    // TODO: Implement edit modal/form
-    console.log("Edit room:", room.id);
-    alert("Edit functionality coming soon!");
+  // Delete Room
+  const handleConfirmDelete = async () => {
+    if (!deleteTarget) return;
+    try {
+      setSubmitting(true);
+      await deleteRoom(deleteTarget.id);
+      setDeleteTarget(null);
+      showAlert("success", "Deleted", "Room deleted successfully!");
+      await fetchRooms();
+    } catch {
+      showAlert("error", "Error", "Failed to delete room.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
-  const handleAdd = () => {
-    // TODO: Implement add modal/form
-    console.log("Add new room");
-    alert("Add room functionality coming soon!");
+  // View Room Profile
+  const handleViewRoom = (room: Room) => {
+    navigate(`/business/rooms/${room.id}`);
   };
 
   if (loading) {
@@ -75,178 +130,121 @@ export default function ManageRooms() {
   }
 
   return (
-    <PageContainer>
-      <Box sx={{ mb: 4 }}>
+    <PageContainer sx={{ alignItems: "stretch", justifyContent: "flex-start" }}>
+      {/* Page Header */}
+      <Box sx={{ mb: 3 }}>
         <Box
           sx={{
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
-            mb: 2,
+            mb: 1,
+            flexWrap: "wrap",
+            gap: 2,
           }}
         >
-          <Typography.Header>Manage Rooms</Typography.Header>
+          <Box>
+            <Typography.Header>Manage Rooms</Typography.Header>
+            <Typography.Body color="default" size="sm" sx={{ mt: 0.5 }}>
+              Manage your accommodation rooms, update details, and set
+              availability
+            </Typography.Body>
+          </Box>
           <Button
             variant="solid"
             colorScheme="primary"
             startDecorator={<Add />}
-            onClick={handleAdd}
+            onClick={handleOpenAdd}
           >
             Add Room
           </Button>
         </Box>
-        <Typography.Body color="default">
-          Manage your accommodation rooms, update details, and set availability
-        </Typography.Body>
       </Box>
 
-      {/* Alert Messages */}
-      {error && (
-        <Box sx={{ mb: 2 }}>
-          <JoyAlert
-            color="danger"
-            startDecorator={<Warning />}
-            variant="soft"
-            endDecorator={
-              <IconButton
-                variant="plain"
-                size="sm"
-                color="danger"
-                onClick={() => setError(null)}
-              >
-                ✕
-              </IconButton>
-            }
-          >
-            {error}
-          </JoyAlert>
-        </Box>
-      )}
-      {success && (
-        <Box sx={{ mb: 2 }}>
-          <JoyAlert
-            color="success"
-            startDecorator={<CheckCircle />}
-            variant="soft"
-            endDecorator={
-              <IconButton
-                variant="plain"
-                size="sm"
-                color="success"
-                onClick={() => setSuccess(null)}
-              >
-                ✕
-              </IconButton>
-            }
-          >
-            {success}
-          </JoyAlert>
-        </Box>
-      )}
-
-      {/* Rooms List */}
+      {/* Rooms Grid */}
       {rooms.length === 0 ? (
-        <Card colorScheme="light" sx={{ p: 4, textAlign: "center" }}>
-          <Typography.Body color="default">
-            No rooms found. Start by adding your first room!
+        <Card
+          colorScheme="light"
+          elevation={1}
+          sx={{ p: 6, textAlign: "center" }}
+        >
+          <Typography.CardTitle color="dark" size="md" sx={{ mb: 1 }}>
+            No Rooms Yet
+          </Typography.CardTitle>
+          <Typography.Body color="default" size="sm">
+            Start by adding your first room to manage.
           </Typography.Body>
           <Button
             variant="outlined"
             colorScheme="primary"
-            onClick={handleAdd}
-            sx={{ mt: 2 }}
+            startDecorator={<Add />}
+            onClick={handleOpenAdd}
+            sx={{ mt: 3 }}
           >
             Add Your First Room
           </Button>
         </Card>
       ) : (
-        <Stack spacing={2}>
+        <Box
+          sx={{
+            display: "grid",
+            gridTemplateColumns: {
+              xs: "1fr",
+              sm: "repeat(2, 1fr)",
+              md: "repeat(3, 1fr)",
+              lg: "repeat(4, 1fr)",
+            },
+            gap: 2.5,
+          }}
+        >
           {rooms.map((room) => (
-            <Card key={room.id} colorScheme="light" sx={{ p: 3 }}>
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "flex-start",
-                  gap: 2,
-                }}
-              >
-                {/* Room Info */}
-                <Box sx={{ flex: 1 }}>
-                  <Typography.CardTitle size="md" color="dark">
-                    {room.room_type || "Standard Room"} - Room{" "}
-                    {room.room_number || "TBA"}
-                  </Typography.CardTitle>
-                  <Typography.Body size="sm" color="default" sx={{ mt: 1 }}>
-                    {room.description || "No description available"}
-                  </Typography.Body>
-                  <Box
-                    sx={{
-                      display: "flex",
-                      gap: 3,
-                      mt: 2,
-                      flexWrap: "wrap",
-                    }}
-                  >
-                    <Box>
-                      <Typography.Label size="xs" color="default">
-                        Capacity
-                      </Typography.Label>
-                      <Typography.Body size="sm" color="dark">
-                        {room.capacity || "N/A"} persons
-                      </Typography.Body>
-                    </Box>
-                    <Box>
-                      <Typography.Label size="xs" color="default">
-                        Price
-                      </Typography.Label>
-                      <Typography.Body size="sm" color="dark">
-                        ₱{room.room_price?.toLocaleString() || "N/A"}/night
-                      </Typography.Body>
-                    </Box>
-                    <Box>
-                      <Typography.Label size="xs" color="default">
-                        Floor
-                      </Typography.Label>
-                      <Typography.Body size="sm" color="dark">
-                        {room.floor || "N/A"}
-                      </Typography.Body>
-                    </Box>
-                    <Box>
-                      <Typography.Label size="xs" color="default">
-                        Size
-                      </Typography.Label>
-                      <Typography.Body size="sm" color="dark">
-                        {room.room_size || "N/A"}
-                      </Typography.Body>
-                    </Box>
-                  </Box>
-                </Box>
-
-                {/* Actions */}
-                <Box sx={{ display: "flex", gap: 1 }}>
-                  <IconButton
-                    variant="outlined"
-                    color="primary"
-                    size="sm"
-                    onClick={() => handleEdit(room)}
-                  >
-                    <Edit />
-                  </IconButton>
-                  <IconButton
-                    variant="outlined"
-                    color="danger"
-                    size="sm"
-                    onClick={() => handleDelete(room.id)}
-                  >
-                    <Delete />
-                  </IconButton>
-                </Box>
-              </Box>
-            </Card>
+            <RoomManagementCard
+              key={room.id}
+              room={room}
+              onEdit={handleOpenEdit}
+              onDelete={setDeleteTarget}
+              onView={handleViewRoom}
+            />
           ))}
-        </Stack>
+        </Box>
       )}
+
+      {/* Room Modal (Add / Edit) */}
+      <RoomModal
+        open={modalOpen}
+        onClose={() => {
+          setModalOpen(false);
+          setEditingRoom(null);
+        }}
+        onSubmit={handleSubmit}
+        room={editingRoom}
+        loading={submitting}
+      />
+
+      {/* Delete Confirmation */}
+      <Alert
+        open={!!deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={handleConfirmDelete}
+        type="warning"
+        title="Delete Room"
+        message={`Are you sure you want to delete Room ${deleteTarget?.room_number ?? "this room"}? This action cannot be undone.`}
+        confirmText="Delete"
+        cancelText="Cancel"
+        loading={submitting}
+        buttonColorScheme="error"
+      />
+
+      {/* Success / Error Alert */}
+      <Alert
+        open={alert.open}
+        onClose={() => setAlert((prev) => ({ ...prev, open: false }))}
+        type={alert.type}
+        title={alert.title}
+        message={alert.message}
+        showCancel={false}
+        confirmText="OK"
+      />
     </PageContainer>
   );
 }

@@ -13,7 +13,6 @@ import MenuIcon from "@mui/icons-material/Menu";
 import Sidebar from "../components/Sidebar";
 import { DarkMode, LightMode } from "@mui/icons-material";
 import { useAuth } from "@/context/AuthContext";
-import { colors } from "@/utils/Colors";
 
 export default function DashboardLayout() {
   // Get user data from auth context
@@ -92,17 +91,25 @@ export default function DashboardLayout() {
       {/* Main Content Area */}
       <Box
         component="main"
-        sx={{ flex: 1, display: "flex", flexDirection: "column" }}
+        sx={{
+          flex: 1,
+          display: "flex",
+          flexDirection: "column",
+          overflow: "auto",
+          height: "100vh",
+        }}
       >
         {/* Mobile Header (Only visible on small screens) */}
         <Sheet
           sx={{
+            position: "sticky",
+            top: 0,
+            zIndex: 900,
             display: { xs: "flex", md: "flex" },
             alignItems: "center",
             p: 2,
             borderBottom: "1px solid",
             borderColor: "divider",
-            bgcolor: colors.transparent,
             justifyContent: "space-between",
           }}
         >

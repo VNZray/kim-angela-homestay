@@ -3,6 +3,23 @@ import type { Room } from "@/types/Room";
 
 const TABLE = "room";
 
+export async function createRoom(
+    payload: Omit<Room, "id">,
+): Promise<Room> {
+    const { data, error } = await supabase
+        .from(TABLE)
+        .insert(payload)
+        .select("*")
+        .single();
+
+    if (error) {
+        console.error("Error creating room:", error);
+        throw error;
+    }
+
+    return data as Room;
+}
+
 export async function getAllRooms(): Promise<Room[]> {
     const { data, error } = await supabase.from(TABLE).select("*");
     if (error) {
