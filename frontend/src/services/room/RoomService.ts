@@ -21,7 +21,10 @@ export async function createRoom(
 }
 
 export async function getAllRooms(): Promise<Room[]> {
-    const { data, error } = await supabase.from(TABLE).select("*");
+    const { data, error } = await supabase
+        .from(TABLE)
+        .select("*")
+        .order("room_number", { ascending: true });
     if (error) {
         console.error("Error fetching rooms:", error);
         throw error;

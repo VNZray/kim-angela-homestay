@@ -531,7 +531,6 @@ export const AccommodationDashboard = () => {
                 tickLabelStyle: { fill: textColor, fontSize: 11 },
               },
             ]}
-            slotProps={{ legend: { hidden: true } }}
           />
         </ChartCard>
 
@@ -563,7 +562,6 @@ export const AccommodationDashboard = () => {
                 tickLabelStyle: { fill: textColor, fontSize: 11 },
               },
             ]}
-            slotProps={{ legend: { hidden: true } }}
           />
         </ChartCard>
 
@@ -590,11 +588,6 @@ export const AccommodationDashboard = () => {
                 cornerRadius: 4,
               },
             ]}
-            slotProps={{
-              legend: {
-                labelStyle: { fill: textColor, fontSize: 12 },
-              },
-            }}
           />
         </ChartCard>
 
@@ -621,11 +614,6 @@ export const AccommodationDashboard = () => {
                 cornerRadius: 4,
               },
             ]}
-            slotProps={{
-              legend: {
-                labelStyle: { fill: textColor, fontSize: 12 },
-              },
-            }}
           />
         </ChartCard>
 
@@ -652,11 +640,6 @@ export const AccommodationDashboard = () => {
                 cornerRadius: 4,
               },
             ]}
-            slotProps={{
-              legend: {
-                labelStyle: { fill: textColor, fontSize: 12 },
-              },
-            }}
           />
         </ChartCard>
 
@@ -683,11 +666,6 @@ export const AccommodationDashboard = () => {
                 cornerRadius: 4,
               },
             ]}
-            slotProps={{
-              legend: {
-                labelStyle: { fill: textColor, fontSize: 12 },
-              },
-            }}
           />
         </ChartCard>
 
@@ -720,7 +698,6 @@ export const AccommodationDashboard = () => {
                 tickLabelStyle: { fill: textColor, fontSize: 11 },
               },
             ]}
-            slotProps={{ legend: { hidden: true } }}
           />
         </ChartCard>
 
@@ -753,11 +730,6 @@ export const AccommodationDashboard = () => {
                 cornerRadius: 4,
               },
             ]}
-            slotProps={{
-              legend: {
-                labelStyle: { fill: textColor, fontSize: 12 },
-              },
-            }}
           />
         </ChartCard>
 
@@ -794,7 +766,6 @@ export const AccommodationDashboard = () => {
                 tickLabelStyle: { fill: textColor, fontSize: 11 },
               },
             ]}
-            slotProps={{ legend: { hidden: true } }}
           />
         </ChartCard>
 
@@ -826,7 +797,6 @@ export const AccommodationDashboard = () => {
                 tickLabelStyle: { fill: textColor, fontSize: 11 },
               },
             ]}
-            slotProps={{ legend: { hidden: true } }}
           />
         </ChartCard>
       </Box>

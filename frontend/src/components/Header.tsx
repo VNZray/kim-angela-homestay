@@ -92,7 +92,8 @@ const Header = () => {
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          p: 2,
+          py: 1.5,
+          px: { xs: 2, sm: 3, md: 4, lg: 6 },
           borderBottom: "1px solid",
           borderColor: "divider",
           position: "fixed",
@@ -100,7 +101,8 @@ const Header = () => {
           left: 0,
           right: 0,
           zIndex: 1100,
-          backdropFilter: "blur(8px)",
+          backdropFilter: "blur(12px)",
+          transition: "all 0.3s ease",
         }}
       >
         <Container padding="0" direction="row" justify="center" align="center">

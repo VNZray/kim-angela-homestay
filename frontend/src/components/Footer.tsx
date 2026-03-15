@@ -1,16 +1,15 @@
-import { Box, Grid, Divider, useColorScheme } from "@mui/joy";
+import { getColors } from "@/utils/Colors";
 import {
+  Email,
   Facebook,
   Instagram,
-  Email,
-  Phone,
   LocationOn,
+  Phone,
 } from "@mui/icons-material";
-import Typography from "./ui/Typography";
+import { Box, Divider, Grid, useColorScheme } from "@mui/joy";
 import { Link } from "react-router-dom";
-import Container from "./Container";
-import { getColors } from "@/utils/Colors";
 import IconButton from "./ui/IconButton";
+import Typography from "./ui/Typography";
 
 /**
  * Footer Component
@@ -49,89 +48,94 @@ const Footer = () => {
       <Box
         sx={{
           position: "relative",
-          height: { xs: "80px", md: "120px" },
+          height: { xs: "60px", sm: "80px", md: "120px" },
           overflow: "hidden",
+          bgcolor: "transparent",
         }}
       >
-        {/* Animated Wave Layers */}
+        {/* Wave Layer 1 - Back */}
         <Box
           sx={{
             position: "absolute",
             bottom: 0,
-            left: 0,
-            width: "200%",
+            left: "-5%",
+            width: "210%",
             height: "100%",
-            animation: "wave 15s linear infinite",
-            "@keyframes wave": {
+            animation: "waveBack 18s ease-in-out infinite",
+            "@keyframes waveBack": {
               "0%": { transform: "translateX(0)" },
-              "100%": { transform: "translateX(-50%)" },
+              "50%": { transform: "translateX(-25%)" },
+              "100%": { transform: "translateX(0)" },
             },
           }}
         >
           <svg
-            viewBox="0 0 1200 120"
+            viewBox="0 0 1440 120"
             preserveAspectRatio="none"
-            style={{
-              width: "100%",
-              height: "100%",
-            }}
+            style={{ width: "100%", height: "100%", display: "block" }}
           >
             <path
-              d="M0,60 C200,90 400,30 600,60 C800,90 1000,30 1200,60 L1200,120 L0,120 Z"
+              d="M0,80 C120,95 240,40 360,60 C480,80 600,100 720,80 C840,60 960,30 1080,50 C1200,70 1320,90 1440,75 L1440,120 L0,120 Z"
               fill={themeColors.primary}
-              opacity="1"
+              opacity="0.25"
             />
           </svg>
         </Box>
 
+        {/* Wave Layer 2 - Mid */}
         <Box
           sx={{
             position: "absolute",
             bottom: 0,
-            left: 0,
-            width: "200%",
+            left: "-5%",
+            width: "210%",
             height: "100%",
-            animation: "wave 12s linear infinite reverse",
+            animation: "waveMid 12s ease-in-out infinite reverse",
+            "@keyframes waveMid": {
+              "0%": { transform: "translateX(0)" },
+              "50%": { transform: "translateX(-20%)" },
+              "100%": { transform: "translateX(0)" },
+            },
           }}
         >
           <svg
-            viewBox="0 0 1200 120"
+            viewBox="0 0 1440 120"
             preserveAspectRatio="none"
-            style={{
-              width: "100%",
-              height: "100%",
-            }}
+            style={{ width: "100%", height: "100%", display: "block" }}
           >
             <path
-              d="M0,40 C300,90 100,10 600,40 C800,70 100,10 1200,40 L1200,120 L0,120 Z"
+              d="M0,60 C180,90 360,30 540,55 C720,80 900,95 1080,65 C1200,45 1320,70 1440,55 L1440,120 L0,120 Z"
               fill={themeColors.primary}
               opacity="0.5"
             />
           </svg>
         </Box>
 
+        {/* Wave Layer 3 - Front */}
         <Box
           sx={{
             position: "absolute",
             bottom: 0,
-            left: 0,
-            width: "200%",
+            left: "-5%",
+            width: "210%",
             height: "100%",
-            animation: "wave 18s linear infinite",
+            animation: "waveFront 15s ease-in-out infinite",
+            "@keyframes waveFront": {
+              "0%": { transform: "translateX(0)" },
+              "50%": { transform: "translateX(-22%)" },
+              "100%": { transform: "translateX(0)" },
+            },
           }}
         >
           <svg
-            viewBox="0 0 1200 120"
+            viewBox="0 0 1440 120"
             preserveAspectRatio="none"
-            style={{
-              width: "100%",
-              height: "100%",
-            }}
+            style={{ width: "100%", height: "100%", display: "block" }}
           >
             <path
-              d="M0,50 C200,80 400,20 600,50 C800,80 1000,20 1200,50 L1200,120 L0,120 Z"
+              d="M0,70 C200,100 400,40 600,65 C800,90 1000,50 1200,70 C1320,80 1400,60 1440,65 L1440,120 L0,120 Z"
               fill={themeColors.primary}
-              opacity="0.3"
+              opacity="1"
             />
           </svg>
         </Box>
@@ -143,12 +147,17 @@ const Footer = () => {
         sx={{
           bgcolor: themeColors.primary,
           color: "#ffffff",
-          p: { xs: 2, md: 2 },
+          px: { xs: 2, sm: 3, md: 4, lg: 6 },
           pt: { xs: 4, md: 6 },
+          pb: { xs: 3, md: 4 },
         }}
       >
-        <Container padding="0">
-          <Grid container sx={{ mb: { xs: 4, md: 6 } }}>
+        <Box sx={{ maxWidth: "1400px", mx: "auto" }}>
+          <Grid
+            container
+            spacing={{ xs: 3, sm: 3, md: 4 }}
+            sx={{ mb: { xs: 3, md: 5 } }}
+          >
             {/* Column 1: About */}
             <Grid xs={12} sm={6} md={3}>
               <Typography.CardTitle size="md" color="white" sx={{ mb: 2 }}>
@@ -295,12 +304,12 @@ const Footer = () => {
           <Divider sx={{ borderColor: "rgba(255, 255, 255, 0.1)" }} />
 
           {/* Copyright */}
-          <Box sx={{ textAlign: "center" }}>
+          <Box sx={{ textAlign: "center", py: 2 }}>
             <Typography.Body size="sm" color="white" sx={{ opacity: 0.6 }}>
               © {currentYear} Kim Angela Homestay. All rights reserved.
             </Typography.Body>
           </Box>
-        </Container>
+        </Box>
       </Box>
     </>
   );

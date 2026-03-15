@@ -15,7 +15,7 @@ import {
 import type { Room } from "@/types/Room";
 import Loading from "@/components/Loading";
 import RoomModal from "./components/RoomModal";
-import RoomManagementCard from "./components/RoomManagementCard";
+import RoomCard from "./components/RoomCard";
 
 export default function ManageRooms() {
   const [rooms, setRooms] = useState<Room[]>([]);
@@ -191,7 +191,7 @@ export default function ManageRooms() {
           }}
         >
           {rooms.map((room) => (
-            <RoomManagementCard
+            <RoomCard
               key={room.id}
               room={room}
               onEdit={handleOpenEdit}

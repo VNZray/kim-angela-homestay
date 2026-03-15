@@ -24,7 +24,7 @@ interface RoomManagementCardProps {
 const PLACEHOLDER_IMAGE =
   "https://placehold.co/400x300/e2e8f0/64748b?text=No+Image";
 
-export default function RoomManagementCard({
+export default function RoomCard({
   room,
   onEdit,
   onDelete,
@@ -72,14 +72,13 @@ export default function RoomManagementCard({
         {/* Room Type Chip */}
         {room.room_type && (
           <Chip
-            size="sm"
-            variant="solid"
+            size="md"
+            variant="soft"
             color="warning"
             sx={{
               position: "absolute",
-              top: 8,
-              left: 8,
-              fontWeight: 600,
+              top: 12,
+              left: 12,
             }}
           >
             {room.room_type}
@@ -88,7 +87,7 @@ export default function RoomManagementCard({
 
         {/* 3-dot Menu */}
         <Box
-          sx={{ position: "absolute", top: 4, right: 4 }}
+          sx={{ position: "absolute", top: 12, right: 12 }}
           onClick={(e) => e.stopPropagation()}
         >
           <Dropdown>
@@ -99,7 +98,7 @@ export default function RoomManagementCard({
                   variant: "solid" as const,
                   size: "sm" as const,
                   sx: {
-                    bgcolor: "rgba(0,0,0,0.5)",
+                    bgcolor: "transparent",
                     color: "#fff",
                     "&:hover": { bgcolor: "rgba(0,0,0,0.7)" },
                     minWidth: 28,

@@ -81,12 +81,11 @@ export default function RoomList({
   return (
     <Grid
       container
-      sm={12}
-      md={10}
-      lg={10}
-      spacing={{ xs: 3, md: 4 }}
+      spacing={{ xs: 2, sm: 3, md: 4 }}
       sx={{
         justifyContent: "center",
+        width: "100%",
+        mx: "auto",
       }}
     >
       {rooms.map((room) => (
@@ -96,7 +95,7 @@ export default function RoomList({
             description={room.description || "Comfortable accommodation"}
             capacity={`${room.capacity || 2} persons`}
             features={[
-              `Room ${room.room_number || "TBA"}`,
+              room.room_number ? `${room.room_number}` : "Room TBA",
               `Floor ${room.floor || 1}`,
               room.room_size ? `Size: ${room.room_size}` : "Standard size",
             ]}

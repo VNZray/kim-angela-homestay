@@ -27,7 +27,6 @@ import { colors } from "@/utils/Colors";
 import BedIcon from "@mui/icons-material/Bed"; // Manage Rooms
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth"; // Bookings
 import CampaignIcon from "@mui/icons-material/Campaign"; // Promotions
-import CardMembershipIcon from "@mui/icons-material/CardMembership"; // Subscription
 import ReceiptLongIcon from "@mui/icons-material/ReceiptLong"; // Transactions
 import StarIcon from "@mui/icons-material/Star"; // Reviews
 
@@ -73,11 +72,6 @@ const accommodationMenuItems: MenuItem[] = [
     title: "Manage Rooms",
     icon: <BedIcon />,
     path: `${business}/rooms`,
-  },
-  {
-    title: "Subscription",
-    icon: <CardMembershipIcon />,
-    path: `${business}/subscription`,
   },
   {
     title: "Reviews & Ratings",

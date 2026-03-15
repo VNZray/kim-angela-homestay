@@ -1,16 +1,15 @@
-import React from "react";
 import {
-  Modal,
-  ModalDialog,
-  DialogTitle,
-  DialogContent,
   Box,
+  DialogContent,
+  DialogTitle,
+  Modal,
   ModalClose,
+  ModalDialog,
   useColorScheme,
 } from "@mui/joy";
+import React from "react";
 import Button from "./Button";
 import Typography from "./Typography";
-import { getColors } from "@/utils/Colors";
 
 type Action = {
   label: string;
@@ -86,7 +85,6 @@ export default function BaseModal({
   size = "sm",
 }: BaseModalProps) {
   const { mode } = useColorScheme();
-  const themeColors = getColors(mode);
   const isDark = mode === "dark";
   const borderColor = isDark ? "#374151" : "#e0e0e0";
   const footerBg = isDark ? "#1e1e1e" : "#fafafa";

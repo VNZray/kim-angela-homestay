@@ -434,7 +434,7 @@ BEGIN
         USING (true);
     END IF;
 
-    -- Business table RLS (read-only for anon)
+    -- Business table RLS (full access; guarded in frontend by Firebase roles)
     IF EXISTS (
         SELECT 1 FROM information_schema.tables
         WHERE table_schema = 'public' AND table_name = 'business'
@@ -445,12 +445,13 @@ BEGIN
 
         CREATE POLICY "Allow anon access to business"
         ON business
-        FOR SELECT
+        FOR ALL
         TO anon
-        USING (true);
+        USING (true)
+        WITH CHECK (true);
     END IF;
 
-    -- Room table RLS (read-only for anon)
+    -- Room table RLS (full access; guarded in frontend by Firebase roles)
     IF EXISTS (
         SELECT 1 FROM information_schema.tables
         WHERE table_schema = 'public' AND table_name = 'room'
@@ -461,9 +462,10 @@ BEGIN
 
         CREATE POLICY "Allow anon access to room"
         ON room
-        FOR SELECT
+        FOR ALL
         TO anon
-        USING (true);
+        USING (true)
+        WITH CHECK (true);
     END IF;
 
     -- Amenity table RLS (read-only for anon)
@@ -482,7 +484,7 @@ BEGIN
         USING (true);
     END IF;
 
-    -- Entity_amenity table RLS (read-only for anon)
+    -- Entity_amenity table RLS (full access; guarded in frontend by Firebase roles)
     IF EXISTS (
         SELECT 1 FROM information_schema.tables
         WHERE table_schema = 'public' AND table_name = 'entity_amenity'
@@ -493,9 +495,10 @@ BEGIN
 
         CREATE POLICY "Allow anon access to entity_amenity"
         ON entity_amenity
-        FOR SELECT
+        FOR ALL
         TO anon
-        USING (true);
+        USING (true)
+        WITH CHECK (true);
     END IF;
 
     -- Booking table RLS (full access; guarded in frontend by Firebase roles)
