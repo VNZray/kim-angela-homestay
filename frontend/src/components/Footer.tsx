@@ -236,7 +236,7 @@ const Footer = () => {
                     color="white"
                     sx={{ opacity: 0.8, lineHeight: 1.6 }}
                   >
-                    Barangay Corong-Corong, El Nido, Palawan, Philippines 5313
+                    Barangay Paniman, Caramoan, Camarines Sur, Philippines
                   </Typography.Body>
                 </Box>
 
@@ -248,7 +248,7 @@ const Footer = () => {
                     color="white"
                     sx={{ opacity: 0.8 }}
                   >
-                    +63 917 123 4567
+                    +63 921 041 7303
                   </Typography.Body>
                 </Box>
 
