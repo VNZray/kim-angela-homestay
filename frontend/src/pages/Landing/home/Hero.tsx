@@ -36,7 +36,7 @@ const Hero = () => {
     <Box
       ref={heroRef}
       sx={{
-        minHeight: { xs: "auto", md: "100vh" },
+        minHeight: { xs: "auto", md: "100dvh" },
         position: "relative",
         display: "flex",
         alignItems: "center",

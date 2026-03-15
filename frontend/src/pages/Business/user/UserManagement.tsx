@@ -192,7 +192,7 @@ const UserManagement = () => {
     count: users.filter((u) => u.role === role).length,
   }));
 
-  if (loading) return <Loading />;
+  if (loading) return <Loading fullPage />;
 
   return (
     <PageContainer sx={{ alignItems: "stretch", justifyContent: "flex-start" }}>

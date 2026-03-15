@@ -378,7 +378,7 @@ export const AccommodationDashboard = () => {
     };
   }, [bookings, rooms, transactions, reviews]);
 
-  if (loading) return <Loading />;
+  if (loading) return <Loading fullPage />;
 
   const CHART_PALETTE = [
     c.primary,

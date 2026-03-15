@@ -4,7 +4,6 @@ import ValueProposition from "./home/ValueProposition";
 import FeaturedRooms from "./home/FeaturedRooms";
 import IslandHopping from "./home/IslandHopping";
 import DiningPackages from "./home/DiningPackages";
-import Amenities from "./home/Amenities";
 
 /**
  * Home Page Component
@@ -19,7 +18,6 @@ export default function Home() {
       <FeaturedRooms />
       <IslandHopping />
       <DiningPackages />
-      <Amenities />
     </Box>
   );
 }

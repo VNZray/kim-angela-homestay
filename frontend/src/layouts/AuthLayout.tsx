@@ -7,7 +7,7 @@ export default function AuthLayout() {
       sx={{
         display: "flex",
         flexDirection: "column",
-        minHeight: "100vh",
+        minHeight: "100dvh",
       }}
     >
       {/* Main Content Area */}

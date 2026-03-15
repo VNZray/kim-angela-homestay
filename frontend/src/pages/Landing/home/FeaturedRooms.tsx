@@ -1,14 +1,11 @@
-import { getColors } from "@/utils/Colors";
-import { Box, useColorScheme } from "@mui/joy";
+import { Box } from "@mui/joy";
 import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import RoomList from "../../../components/room-components/RoomList";
 import SectionHeader from "../../../components/SectionHeader";
 import Button from "../../../components/ui/Button";
-import RoomList from "../../../components/room-components/RoomList";
-import { useNavigate } from "react-router-dom";
 
 const FeaturedRooms = () => {
-  const { mode } = useColorScheme();
-  const themeColors = getColors(mode);
   const navigate = useNavigate();
   const sectionRef = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
@@ -33,7 +30,6 @@ const FeaturedRooms = () => {
         position: "relative",
         overflow: "hidden",
         px: { xs: 2, sm: 3, md: 4, lg: 6 },
-        bgcolor: themeColors.odd,
       }}
     >
       <Box

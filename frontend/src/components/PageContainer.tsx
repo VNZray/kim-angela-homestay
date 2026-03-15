@@ -10,7 +10,7 @@ const PageContainer = ({ children, sx, gap = 2 }: Props) => {
   return (
     <Box
       gap={gap}
-      minHeight={"100vh"}
+      minHeight={"100dvh"}
       sx={{
         height: { xs: "auto", md: "auto" },
         display: "flex",

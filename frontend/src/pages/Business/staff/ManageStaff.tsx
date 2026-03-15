@@ -306,7 +306,7 @@ export default function ManageStaff() {
   }));
   const onlineCount = staff.filter((s) => s.is_online).length;
 
-  if (loading) return <Loading />;
+  if (loading) return <Loading fullPage />;
 
   return (
     <PageContainer sx={{ alignItems: "stretch", justifyContent: "flex-start" }}>

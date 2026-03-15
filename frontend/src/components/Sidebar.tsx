@@ -128,7 +128,7 @@ export default function Sidebar({
 
   const handleLogout = async () => {
     await logout();
-    navigate("/auth/login");
+    navigate("/");
     if (isMobile) {
       closeMobileSidebar();
     }
@@ -166,7 +166,7 @@ export default function Sidebar({
         },
         transition: "transform 0.4s, width 0.4s",
         zIndex: 1000,
-        height: "100vh",
+        height: "100dvh",
         width: "260px",
         top: 0,
         p: 2,

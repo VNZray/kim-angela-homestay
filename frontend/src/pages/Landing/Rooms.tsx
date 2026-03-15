@@ -1,18 +1,13 @@
 import RoomList from "@/components/room-components/RoomList";
 import SectionHeader from "@/components/SectionHeader";
-import { getColors } from "@/utils/Colors";
-import { Box, useColorScheme } from "@mui/joy";
+import { Box } from "@mui/joy";
 
 export default function Rooms() {
-  const { mode } = useColorScheme();
-  const themeColors = getColors(mode);
-
   return (
     <Box
       component="main"
       sx={{
-        minHeight: "100vh",
-        bgcolor: themeColors.odd,
+        minHeight: "100dvh",
         px: { xs: 2, sm: 3, md: 4, lg: 6 },
         pt: { xs: 10, md: 12 },
         pb: { xs: 6, md: 10 },

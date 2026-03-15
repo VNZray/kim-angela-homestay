@@ -16,7 +16,7 @@ export default function ProtectedRoute({
   const { user, loading } = useAuth();
 
   if (loading) {
-    return <Loading />;
+    return <Loading fullPage />;
   }
 
   if (!user) {

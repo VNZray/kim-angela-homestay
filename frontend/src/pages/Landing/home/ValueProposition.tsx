@@ -75,6 +75,7 @@ const ValueProposition = () => {
         py: { xs: 6, md: 10 },
         position: "relative",
         overflow: "hidden",
+        bgcolor: themeColors.odd,
         px: { xs: 2, sm: 3, md: 4, lg: 6 },
       }}
     >

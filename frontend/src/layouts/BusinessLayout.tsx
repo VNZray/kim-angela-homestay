@@ -67,7 +67,7 @@ export default function DashboardLayout() {
   }
 
   return (
-    <Box sx={{ display: "flex", minHeight: "100vh" }}>
+    <Box sx={{ display: "flex", minHeight: "100dvh" }}>
       {/* Sidebar Component */}
       <Sidebar
         isMobile={isMobileSidebarOpen}
@@ -96,7 +96,7 @@ export default function DashboardLayout() {
           display: "flex",
           flexDirection: "column",
           overflow: "auto",
-          height: "100vh",
+          height: "100dvh",
         }}
       >
         {/* Mobile Header (Only visible on small screens) */}

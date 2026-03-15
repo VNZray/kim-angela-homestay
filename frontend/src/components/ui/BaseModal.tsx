@@ -115,7 +115,7 @@ export default function BaseModal({
               : finalMaxWidth,
           borderRadius: "16px",
           boxShadow: "0 8px 32px rgba(0,0,0,0.12)",
-          maxHeight: "90vh",
+          maxHeight: "90dvh",
           overflow: "hidden",
           display: "flex",
           flexDirection: "column",

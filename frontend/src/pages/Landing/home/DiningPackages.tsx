@@ -4,11 +4,9 @@ import Typography from "../../../components/ui/Typography";
 import Card from "../../../components/ui/Card";
 import Button from "../../../components/ui/Button";
 import SectionHeader from "../../../components/SectionHeader";
-import { getColors } from "@/utils/Colors";
 
 const DiningPackages = () => {
   const { mode } = useColorScheme();
-  const themeColors = getColors(mode);
   const sectionRef = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
 
@@ -65,7 +63,6 @@ const DiningPackages = () => {
         position: "relative",
         overflow: "hidden",
         px: { xs: 2, sm: 3, md: 4, lg: 6 },
-        bgcolor: themeColors.odd,
       }}
     >
       <Box sx={{ maxWidth: "1400px", mx: "auto" }}>
@@ -93,6 +90,7 @@ const DiningPackages = () => {
               >
                 <Card
                   colorScheme="light"
+                  elevation={mode === "light" ? 4 : undefined}
                   sx={{
                     height: "100%",
                     borderRadius: "lg",

@@ -1,4 +1,4 @@
-import { AspectRatio, Box } from "@mui/joy";
+import { AspectRatio, Box, useColorScheme } from "@mui/joy";
 import Card from "../ui/Card";
 import Typography from "../ui/Typography";
 import Button from "../ui/Button";
@@ -26,9 +26,11 @@ const RoomCard = ({
   buttonText,
   onClick,
 }: RoomCardProps) => {
+  const { mode } = useColorScheme();
   return (
     <Card
       colorScheme="light"
+      elevation={mode === "light" ? 4 : undefined}
       sx={{
         height: "100%",
         borderRadius: "lg",
