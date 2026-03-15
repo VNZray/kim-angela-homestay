@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { Box, useColorScheme } from "@mui/joy";
-import { BarChart, PieChart, LineChart } from "@mui/x-charts";
+import { BarChart, LineChart } from "@mui/x-charts";
+import DashboardPieChart from "./components/PieChart";
 import {
   TrendingUp,
   Hotel,
@@ -13,7 +14,7 @@ import {
 import PageContainer from "@/components/PageContainer";
 import Typography from "@/components/ui/Typography";
 import Loading from "@/components/Loading";
-import { getColors } from "@/utils/Colors";
+import { colors, getColors } from "@/utils/Colors";
 import { getAllBookings } from "@/services/booking/BookingService";
 import { getAllRooms } from "@/services/room/RoomService";
 import { getAllTransactions } from "@/services/transaction/TransactionService";
@@ -26,6 +27,9 @@ import type {
   TransactionStatus,
 } from "@/types/Transaction";
 import type { RoomReview } from "@/types/RoomReview";
+import StatCard from "./components/StatCard";
+import Container from "@/components/Container";
+import BasicPie from "./components/BasicPie";
 
 // ─── Helpers ──────────────────────────────────────────────
 const MONTHS = [
@@ -57,72 +61,10 @@ function daysBetween(a: string, b: string) {
   return Math.max(1, Math.ceil(ms / 86_400_000));
 }
 
-// ─── Stat Card ────────────────────────────────────────────
-function StatCard({
-  icon,
-  label,
-  value,
-  sub,
-  borderColor,
-  cardBg,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  value: string | number;
-  sub?: string;
-  borderColor: string;
-  cardBg: string;
-}) {
-  return (
-    <Box
-      sx={{
-        p: 2.5,
-        borderRadius: "14px",
-        border: `1px solid ${borderColor}`,
-        backgroundColor: cardBg,
-        display: "flex",
-        gap: 2,
-        alignItems: "center",
-      }}
-    >
-      <Box
-        sx={{
-          width: 44,
-          height: 44,
-          borderRadius: "10px",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          bgcolor: "primary.softBg",
-          color: "primary.plainColor",
-        }}
-      >
-        {icon}
-      </Box>
-      <Box>
-        <Typography.Body size="xs" color="default">
-          {label}
-        </Typography.Body>
-        <Typography.Header size="sm" bold>
-          {value}
-        </Typography.Header>
-        {sub && (
-          <Typography.Body size="xs" color="default">
-            {sub}
-          </Typography.Body>
-        )}
-      </Box>
-    </Box>
-  );
-}
-
 // ─── Chart Card ───────────────────────────────────────────
 function ChartCard({
   title,
   children,
-  borderColor,
-  cardBg,
-  span = 1,
 }: {
   title: string;
   children: React.ReactNode;
@@ -130,24 +72,20 @@ function ChartCard({
   cardBg: string;
   span?: number;
 }) {
+  const { mode } = useColorScheme();
   return (
-    <Box
-      sx={{
-        p: 2.5,
-        borderRadius: "14px",
-        border: `1px solid ${borderColor}`,
-        backgroundColor: cardBg,
-        gridColumn: { xs: "span 1", md: `span ${span}` },
-        minHeight: 320,
-        display: "flex",
-        flexDirection: "column",
-      }}
+    <Container
+      hover
+      hoverBackground={mode === "dark" ? colors.dark : colors.light}
+      background="light"
+      direction="column"
+      elevation={3}
     >
       <Typography.Label size="sm" bold sx={{ mb: 2 }}>
         {title}
       </Typography.Label>
       <Box sx={{ flex: 1, minHeight: 0 }}>{children}</Box>
-    </Box>
+    </Container>
   );
 }
 
@@ -392,7 +330,7 @@ export const AccommodationDashboard = () => {
   ];
 
   return (
-    <PageContainer sx={{ alignItems: "stretch" }}>
+    <PageContainer sx={{ alignItems: "stretch" }} gap={3}>
       {/* Header */}
       <Box>
         <Typography.Header size="sm" bold>
@@ -412,7 +350,7 @@ export const AccommodationDashboard = () => {
             sm: "repeat(2, 1fr)",
             md: "repeat(4, 1fr)",
           },
-          gap: 2,
+          gap: 3,
         }}
       >
         <StatCard
@@ -457,7 +395,7 @@ export const AccommodationDashboard = () => {
             xs: "repeat(2, 1fr)",
             sm: "repeat(4, 1fr)",
           },
-          gap: 2,
+          gap: 3,
         }}
       >
         <StatCard
@@ -494,12 +432,80 @@ export const AccommodationDashboard = () => {
         />
       </Box>
 
+      <Box
+        sx={{
+          display: "grid",
+          gridTemplateColumns: { xs: "1fr", md: "repeat(3, 1fr)" },
+          gap: 3,
+        }}
+      >
+        {/* Booking Status */}
+        <ChartCard
+          title="Booking Status"
+          borderColor={borderColor}
+          cardBg={cardBg}
+        >
+          <BasicPie
+            data={Object.entries(analytics.statusCounts).map(
+              ([label, value], i) => ({
+                id: label,
+                value,
+                label: label.replace("_", " "),
+                color: CHART_PALETTE[i % CHART_PALETTE.length],
+              }),
+            )}
+          />
+        </ChartCard>
+
+        {/* Booking Source */}
+        <ChartCard
+          title="Booking Source"
+          borderColor={borderColor}
+          cardBg={cardBg}
+        >
+          <DashboardPieChart
+            data={Object.entries(analytics.sourceCounts).map(
+              ([label, value], i) => ({
+                id: label,
+                value,
+                label,
+                color: CHART_PALETTE[i % CHART_PALETTE.length],
+              }),
+            )}
+          />
+        </ChartCard>
+
+        {/* Booking Type */}
+        <ChartCard
+          title="Booking Type"
+          borderColor={borderColor}
+          cardBg={cardBg}
+        >
+          <DashboardPieChart
+            data={[
+              {
+                id: "overnight",
+                value: analytics.overnightCount,
+                label: "Overnight",
+                color: c.primary,
+              },
+              {
+                id: "short-stay",
+                value: analytics.shortStayCount,
+                label: "Short Stay",
+                color: c.info,
+              },
+            ]}
+          />
+        </ChartCard>
+      </Box>
+
       {/* Charts Grid */}
       <Box
         sx={{
           display: "grid",
           gridTemplateColumns: { xs: "1fr", md: "repeat(2, 1fr)" },
-          gap: 2,
+          gap: 3,
         }}
       >
         {/* Monthly Revenue */}
@@ -565,81 +571,21 @@ export const AccommodationDashboard = () => {
           />
         </ChartCard>
 
-        {/* Booking Status */}
-        <ChartCard
-          title="Booking Status"
-          borderColor={borderColor}
-          cardBg={cardBg}
-        >
-          <PieChart
-            height={260}
-            series={[
-              {
-                data: Object.entries(analytics.statusCounts).map(
-                  ([label, value], i) => ({
-                    id: label,
-                    value,
-                    label: label.replace("_", " "),
-                    color: CHART_PALETTE[i % CHART_PALETTE.length],
-                  }),
-                ),
-                innerRadius: 40,
-                paddingAngle: 2,
-                cornerRadius: 4,
-              },
-            ]}
-          />
-        </ChartCard>
-
-        {/* Booking Source */}
-        <ChartCard
-          title="Booking Source"
-          borderColor={borderColor}
-          cardBg={cardBg}
-        >
-          <PieChart
-            height={260}
-            series={[
-              {
-                data: Object.entries(analytics.sourceCounts).map(
-                  ([label, value], i) => ({
-                    id: label,
-                    value,
-                    label,
-                    color: CHART_PALETTE[i % CHART_PALETTE.length],
-                  }),
-                ),
-                innerRadius: 40,
-                paddingAngle: 2,
-                cornerRadius: 4,
-              },
-            ]}
-          />
-        </ChartCard>
-
         {/* Payment Methods */}
         <ChartCard
           title="Payment Methods"
           borderColor={borderColor}
           cardBg={cardBg}
         >
-          <PieChart
-            height={260}
-            series={[
-              {
-                data: Object.entries(analytics.paymentCounts)
-                  .filter(([, v]) => v > 0)
-                  .map(([label, value], i) => ({
-                    id: label,
-                    value,
-                    label: label.replace("_", " "),
-                    color: CHART_PALETTE[i % CHART_PALETTE.length],
-                  })),
-                innerRadius: 40,
-                paddingAngle: 2,
-                cornerRadius: 4,
-              },
-            ]}
+          <DashboardPieChart
+            data={Object.entries(analytics.paymentCounts)
+              .filter(([, v]) => v > 0)
+              .map(([label, value], i) => ({
+                id: label,
+                value,
+                label: label.replace("_", " "),
+                color: CHART_PALETTE[i % CHART_PALETTE.length],
+              }))}
           />
         </ChartCard>
 
@@ -649,23 +595,15 @@ export const AccommodationDashboard = () => {
           borderColor={borderColor}
           cardBg={cardBg}
         >
-          <PieChart
-            height={260}
-            series={[
-              {
-                data: Object.entries(analytics.txStatusCounts)
-                  .filter(([, v]) => v > 0)
-                  .map(([label, value], i) => ({
-                    id: label,
-                    value,
-                    label,
-                    color: CHART_PALETTE[i % CHART_PALETTE.length],
-                  })),
-                innerRadius: 40,
-                paddingAngle: 2,
-                cornerRadius: 4,
-              },
-            ]}
+          <DashboardPieChart
+            data={Object.entries(analytics.txStatusCounts)
+              .filter(([, v]) => v > 0)
+              .map(([label, value], i) => ({
+                id: label,
+                value,
+                label,
+                color: CHART_PALETTE[i % CHART_PALETTE.length],
+              }))}
           />
         </ChartCard>
 
@@ -701,38 +639,6 @@ export const AccommodationDashboard = () => {
           />
         </ChartCard>
 
-        {/* Booking Type */}
-        <ChartCard
-          title="Booking Type"
-          borderColor={borderColor}
-          cardBg={cardBg}
-        >
-          <PieChart
-            height={260}
-            series={[
-              {
-                data: [
-                  {
-                    id: "overnight",
-                    value: analytics.overnightCount,
-                    label: "Overnight",
-                    color: c.primary,
-                  },
-                  {
-                    id: "short-stay",
-                    value: analytics.shortStayCount,
-                    label: "Short Stay",
-                    color: c.info,
-                  },
-                ],
-                innerRadius: 40,
-                paddingAngle: 2,
-                cornerRadius: 4,
-              },
-            ]}
-          />
-        </ChartCard>
-
         {/* Guest Demographics */}
         <ChartCard
           title="Guest Demographics"
@@ -757,37 +663,6 @@ export const AccommodationDashboard = () => {
             xAxis={[
               {
                 data: ["Adults", "Children", "Infants", "Domestic", "Foreign"],
-                scaleType: "band",
-                tickLabelStyle: { fill: textColor, fontSize: 11 },
-              },
-            ]}
-            yAxis={[
-              {
-                tickLabelStyle: { fill: textColor, fontSize: 11 },
-              },
-            ]}
-          />
-        </ChartCard>
-
-        {/* Room Type Distribution */}
-        <ChartCard
-          title="Room Types"
-          borderColor={borderColor}
-          cardBg={cardBg}
-          span={2}
-        >
-          <BarChart
-            height={260}
-            series={[
-              {
-                data: Object.values(analytics.roomTypeCounts),
-                label: "Rooms",
-                color: c.secondary,
-              },
-            ]}
-            xAxis={[
-              {
-                data: Object.keys(analytics.roomTypeCounts),
                 scaleType: "band",
                 tickLabelStyle: { fill: textColor, fontSize: 11 },
               },

@@ -15,6 +15,7 @@ import {
   signOut,
   onAuthStateChanged,
   setPersistence,
+  updateProfile,
   browserLocalPersistence,
   browserSessionPersistence,
   type FirebaseUser,
@@ -26,6 +27,7 @@ import {
   markUserOffline,
 } from "../services/auth/AuthService";
 import { createGuestForUser } from "../services/guest/GuestService";
+import { createTouristForUser } from "../services/tourist/TouristService";
 
 interface AuthContextType {
   user: User | null;
@@ -160,28 +162,44 @@ export function AuthProvider({ children }: AuthProviderProps) {
           password,
         );
 
+        // Set the Firebase display name from the inputted profile
+        const displayName = profile
+          ? `${profile.firstName} ${profile.lastName}`.trim()
+          : null;
+
+        if (displayName) {
+          await updateProfile(credential.user, { displayName });
+        }
+
         // Fetch user role from Supabase (will be created as tourist by default)
         const role = await getOrCreateUserRole(
           credential.user.uid,
           credential.user.email || "",
-          credential.user.displayName,
+          displayName,
         );
 
         const appUser: User = {
           email: credential.user.email || "",
           uid: credential.user.uid,
-          displayName: credential.user.displayName,
+          displayName,
           photoURL: credential.user.photoURL,
           role: role,
         };
 
         if (profile) {
-          await createGuestForUser({
-            firebaseUid: credential.user.uid,
-            firstName: profile.firstName,
-            lastName: profile.lastName,
-            phone: profile.phone,
-          });
+          await Promise.all([
+            createGuestForUser({
+              firebaseUid: credential.user.uid,
+              firstName: profile.firstName,
+              lastName: profile.lastName,
+              phone: profile.phone,
+            }),
+            createTouristForUser({
+              firebaseUid: credential.user.uid,
+              firstName: profile.firstName,
+              lastName: profile.lastName,
+            }),
+          ]);
         }
 
         return appUser;

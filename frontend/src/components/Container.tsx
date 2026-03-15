@@ -58,6 +58,8 @@ interface ContainerProps {
   animationDelay?: number; // in ms, default 0
 
   // Interaction
+  variant?: "filled" | "outlined";
+  outlineColor?: Color;
   cursor?: "pointer" | "default" | "grab" | "text";
   disabled?: boolean;
   position?: "relative" | "absolute" | "fixed" | "sticky";
@@ -86,6 +88,8 @@ const Container: React.FC<ContainerProps> = ({
   opacity = 1,
   align,
   justify,
+  variant = "filled",
+  outlineColor,
   hover = false,
   hoverEffect = "lift",
   hoverBackground,
@@ -208,6 +212,16 @@ const Container: React.FC<ContainerProps> = ({
     }
   };
 
+  const getBorderStyle = (): React.CSSProperties => {
+    if (variant !== "outlined") return {};
+    const color = outlineColor
+      ? themeColors[outlineColor]
+      : mode === "dark"
+        ? "rgba(255,255,255,0.18)"
+        : "rgba(0,0,0,0.15)";
+    return { border: `1px solid ${color}` };
+  };
+
   const containerStyle: React.CSSProperties = {
     width,
     height,
@@ -223,6 +237,7 @@ const Container: React.FC<ContainerProps> = ({
     opacity,
     position,
     cursor: disabled ? "not-allowed" : cursor,
+    ...getBorderStyle(),
     ...(hover &&
       !isHovered && { transition: `all ${hoverDuration}ms ease-in-out` }),
     ...getHoverStyles(),

@@ -2,6 +2,40 @@ import supabase from "@/utils/supabase";
 import type { Tourist } from "@/types/Tourist";
 
 const TABLE = "tourist";
+const USERS_TABLE = "users";
+
+export async function createTouristForUser(input: {
+    firebaseUid: string;
+    firstName: string;
+    lastName: string;
+}): Promise<void> {
+    const { firebaseUid, firstName, lastName } = input;
+
+    try {
+        const { data: userRow, error: userError } = await supabase
+            .from(USERS_TABLE)
+            .select("id")
+            .eq("firebase_uid", firebaseUid)
+            .single();
+
+        if (userError || !userRow) {
+            console.error("Unable to find users row for tourist:", userError);
+            return;
+        }
+
+        const { error: insertError } = await supabase.from(TABLE).insert({
+            user_id: userRow.id,
+            first_name: firstName,
+            last_name: lastName,
+        });
+
+        if (insertError) {
+            console.error("Error creating tourist profile:", insertError);
+        }
+    } catch (err) {
+        console.error("Unexpected error creating tourist profile:", err);
+    }
+}
 
 export async function getAllTourists(): Promise<Tourist[]> {
     const { data, error } = await supabase.from(TABLE).select("*");
