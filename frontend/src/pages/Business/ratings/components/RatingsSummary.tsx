@@ -1,9 +1,8 @@
-import { Box, LinearProgress, useColorScheme } from "@mui/joy";
-import { Star } from "@mui/icons-material";
-import Card from "@/components/ui/Card";
+import Container from "@/components/Container";
 import Typography from "@/components/ui/Typography";
 import { getColors } from "@/utils/Colors";
-import Container from "@/components/Container";
+import { Star } from "@mui/icons-material";
+import { Box, LinearProgress, useColorScheme } from "@mui/joy";
 
 interface RatingsSummaryProps {
   ratings: number[];
@@ -12,20 +11,9 @@ interface RatingsSummaryProps {
   roomCount: number;
 }
 
-const RatingsSummary = ({
-  ratings,
-  totalReviews,
-  businessCount,
-  roomCount,
-}: RatingsSummaryProps) => {
+const RatingsSummary = ({ ratings, totalReviews }: RatingsSummaryProps) => {
   const { mode } = useColorScheme();
   const colors = getColors(mode as "light" | "dark");
-
-  const avg =
-    totalReviews > 0
-      ? ratings.reduce((sum, r) => sum + r, 0) / totalReviews
-      : 0;
-  const avgDisplay = avg.toFixed(1);
 
   const starCounts = [5, 4, 3, 2, 1].map((star) => {
     const count = ratings.filter((r) => r === star).length;
@@ -35,14 +23,6 @@ const RatingsSummary = ({
       percentage: totalReviews > 0 ? (count / totalReviews) * 100 : 0,
     };
   });
-
-  const getRatingLabel = (a: number) => {
-    if (a >= 4.5) return "Excellent";
-    if (a >= 4.0) return "Very Good";
-    if (a >= 3.0) return "Good";
-    if (a >= 2.0) return "Fair";
-    return "Poor";
-  };
 
   return (
     <Container variant="outlined" elevation={0} background="light">

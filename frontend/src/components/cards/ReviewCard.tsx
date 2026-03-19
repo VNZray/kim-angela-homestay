@@ -1,3 +1,5 @@
+import { getColors } from "@/utils/Colors";
+import { Reply, Send, Star } from "@mui/icons-material";
 import {
   Avatar,
   Box,
@@ -5,12 +7,9 @@ import {
   Textarea,
   useColorScheme,
 } from "@mui/joy";
-import { Reply, Send, Star } from "@mui/icons-material";
-import Card from "../ui/Card";
+import Container from "../Container";
 import Button from "../ui/Button";
 import Typography from "../ui/Typography";
-import { getColors } from "@/utils/Colors";
-import Container from "../Container";
 
 interface ExistingReply {
   id: string;
