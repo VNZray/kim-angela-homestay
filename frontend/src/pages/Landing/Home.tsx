@@ -2,8 +2,11 @@ import { Box } from "@mui/joy";
 import Hero from "./home/Hero";
 import ValueProposition from "./home/ValueProposition";
 import FeaturedRooms from "./home/FeaturedRooms";
+// import Promotions from "./home/Promotions";
 import IslandHopping from "./home/IslandHopping";
 import DiningPackages from "./home/DiningPackages";
+import GuestReviews from "./home/GuestReviews";
+import RateUsButton from "./home/RateUsButton";
 
 /**
  * Home Page Component
@@ -16,8 +19,11 @@ export default function Home() {
       <Hero />
       <ValueProposition />
       <FeaturedRooms />
+      {/* <Promotions /> */}
       <IslandHopping />
       <DiningPackages />
+      <GuestReviews />
+      <RateUsButton />
     </Box>
   );
 }

@@ -12,7 +12,14 @@ import {
   updateRoom,
   deleteRoom,
 } from "@/services/room/RoomService";
+import { getAmenitiesByEntityType } from "@/services/amenity/AmenityService";
+import {
+  getEntityAmenitiesByEntityId,
+  createEntityAmenity,
+  deleteEntityAmenitiesByEntityId,
+} from "@/services/amenity/EntityAmenityService";
 import type { Room } from "@/types/Room";
+import type { Amenity } from "@/types/Amenity";
 import Loading from "@/components/Loading";
 import RoomModal from "./components/RoomModal";
 import RoomCard from "./components/RoomCard";
@@ -21,6 +28,11 @@ export default function ManageRooms() {
   const [rooms, setRooms] = useState<Room[]>([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [allAmenities, setAllAmenities] = useState<Amenity[]>([]);
+  // map: room.id → amenity_id[]
+  const [roomAmenityMap, setRoomAmenityMap] = useState<
+    Record<string, number[]>
+  >({});
 
   // Modal state
   const [modalOpen, setModalOpen] = useState(false);
@@ -44,8 +56,22 @@ export default function ManageRooms() {
   const fetchRooms = async () => {
     try {
       setLoading(true);
-      const data = await getAllRooms();
+      const [data, amenities] = await Promise.all([
+        getAllRooms(),
+        getAmenitiesByEntityType("room"),
+      ]);
       setRooms(data);
+      setAllAmenities(amenities);
+
+      // Build room → amenity id map
+      const map: Record<string, number[]> = {};
+      await Promise.all(
+        data.map(async (room) => {
+          const eas = await getEntityAmenitiesByEntityId(room.id);
+          map[room.id] = eas.map((ea) => ea.amenity_id);
+        }),
+      );
+      setRoomAmenityMap(map);
     } catch {
       showAlert("error", "Error", "Failed to load rooms. Please try again.");
     } finally {
@@ -74,16 +100,29 @@ export default function ManageRooms() {
   };
 
   // Submit (Add or Edit)
-  const handleSubmit = async (payload: Omit<Room, "id">) => {
+  const handleSubmit = async (
+    payload: Omit<Room, "id">,
+    selectedAmenityIds: number[],
+  ) => {
     try {
       setSubmitting(true);
+      let savedRoom: Room;
       if (editingRoom) {
-        await updateRoom(editingRoom.id, payload);
+        savedRoom = await updateRoom(editingRoom.id, payload);
         showAlert("success", "Updated", "Room updated successfully!");
       } else {
-        await createRoom(payload);
+        savedRoom = await createRoom(payload);
         showAlert("success", "Created", "Room added successfully!");
       }
+
+      // Sync entity amenities
+      await deleteEntityAmenitiesByEntityId(savedRoom.id);
+      await Promise.all(
+        selectedAmenityIds.map((amenityId) =>
+          createEntityAmenity(savedRoom.id, amenityId),
+        ),
+      );
+
       setModalOpen(false);
       setEditingRoom(null);
       await fetchRooms();
@@ -196,6 +235,9 @@ export default function ManageRooms() {
               room={room}
               onEdit={handleOpenEdit}
               onDelete={setDeleteTarget}
+              amenities={allAmenities.filter((a) =>
+                (roomAmenityMap[room.id] ?? []).includes(a.id),
+              )}
             />
           ))}
         </Box>
@@ -211,6 +253,10 @@ export default function ManageRooms() {
         onSubmit={handleSubmit}
         room={editingRoom}
         loading={submitting}
+        allAmenities={allAmenities}
+        initialAmenityIds={
+          editingRoom ? (roomAmenityMap[editingRoom.id] ?? []) : []
+        }
       />
 
       {/* Delete Confirmation */}

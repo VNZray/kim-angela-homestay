@@ -14,11 +14,13 @@ import Card from "@/components/ui/Card";
 import Typography from "@/components/ui/Typography";
 import IconButton from "@/components/ui/IconButton";
 import type { Room } from "@/types/Room";
+import type { Amenity } from "@/types/Amenity";
 
 interface RoomManagementCardProps {
   room: Room;
   onEdit: (room: Room) => void;
   onDelete: (room: Room) => void;
+  amenities?: Amenity[];
 }
 
 const PLACEHOLDER_IMAGE =
@@ -28,6 +30,7 @@ export default function RoomCard({
   room,
   onEdit,
   onDelete,
+  amenities = [],
 }: RoomManagementCardProps) {
   const navigate = useNavigate();
 
@@ -210,6 +213,22 @@ export default function RoomCard({
             </Typography.Label>
           )}
         </Box>
+
+        {/* Amenities */}
+        {amenities.length > 0 && (
+          <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.75, mt: 1 }}>
+            {amenities.slice(0, 3).map((a) => (
+              <Chip key={a.id} size="sm" variant="soft" color="neutral">
+                {a.name}
+              </Chip>
+            ))}
+            {amenities.length > 3 && (
+              <Chip size="sm" variant="outlined" color="neutral">
+                +{amenities.length - 3} more
+              </Chip>
+            )}
+          </Box>
+        )}
       </Box>
     </Card>
   );

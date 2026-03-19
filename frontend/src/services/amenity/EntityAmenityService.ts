@@ -72,3 +72,35 @@ export async function deleteEntityAmenity(id: number): Promise<void> {
         throw error;
     }
 }
+
+export async function createEntityAmenity(
+    entityId: string,
+    amenityId: number,
+): Promise<EntityAmenity> {
+    const { data, error } = await supabase
+        .from(TABLE)
+        .insert({ entity_id: entityId, amenity_id: amenityId })
+        .select("*")
+        .single();
+
+    if (error) {
+        console.error("Error creating entity amenity:", error);
+        throw error;
+    }
+
+    return data as EntityAmenity;
+}
+
+export async function deleteEntityAmenitiesByEntityId(
+    entityId: string,
+): Promise<void> {
+    const { error } = await supabase
+        .from(TABLE)
+        .delete()
+        .eq("entity_id", entityId);
+
+    if (error) {
+        console.error("Error deleting entity amenities by entity_id:", error);
+        throw error;
+    }
+}

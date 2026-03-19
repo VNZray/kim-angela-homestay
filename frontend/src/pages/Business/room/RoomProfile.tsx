@@ -30,10 +30,17 @@ import {
 } from "@/services/room/RoomService";
 import { getBookingsByRoomId } from "@/services/booking/BookingService";
 import { getRoomReviewsByRoomId } from "@/services/reviews/RoomReviewService";
+import { getAmenitiesByEntityType } from "@/services/amenity/AmenityService";
+import {
+  getEntityAmenitiesByEntityId,
+  createEntityAmenity,
+  deleteEntityAmenitiesByEntityId,
+} from "@/services/amenity/EntityAmenityService";
 import { getColors } from "@/utils/Colors";
 import type { Room } from "@/types/Room";
 import type { Booking } from "@/types/Booking";
 import type { RoomReview } from "@/types/RoomReview";
+import type { Amenity } from "@/types/Amenity";
 import Container from "@/components/Container";
 
 const PLACEHOLDER_IMAGE =
@@ -48,6 +55,8 @@ export default function RoomProfile() {
   const [room, setRoom] = useState<Room | null>(null);
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [reviews, setReviews] = useState<RoomReview[]>([]);
+  const [amenities, setAmenities] = useState<Amenity[]>([]);
+  const [allAmenities, setAllAmenities] = useState<Amenity[]>([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [activeTab, setActiveTab] = useState(0);
@@ -68,14 +77,23 @@ export default function RoomProfile() {
     if (!id) return;
     try {
       setLoading(true);
-      const [roomData, bookingData, reviewData] = await Promise.all([
-        getRoomById(id),
-        getBookingsByRoomId(id),
-        getRoomReviewsByRoomId(id),
-      ]);
+      const [roomData, bookingData, reviewData, allAmenityData] =
+        await Promise.all([
+          getRoomById(id),
+          getBookingsByRoomId(id),
+          getRoomReviewsByRoomId(id),
+          getAmenitiesByEntityType("room"),
+        ]);
       setRoom(roomData);
       setBookings(bookingData);
       setReviews(reviewData);
+      setAllAmenities(allAmenityData);
+
+      if (roomData) {
+        const eas = await getEntityAmenitiesByEntityId(roomData.id);
+        const ids = new Set(eas.map((ea) => ea.amenity_id));
+        setAmenities(allAmenityData.filter((a) => ids.has(a.id)));
+      }
     } catch {
       setAlert({
         open: true,
@@ -92,12 +110,25 @@ export default function RoomProfile() {
     fetchRoom();
   }, [fetchRoom]);
 
-  const handleUpdate = async (payload: Omit<Room, "id">) => {
+  const handleUpdate = async (
+    payload: Omit<Room, "id">,
+    selectedAmenityIds: number[],
+  ) => {
     if (!room) return;
     try {
       setSubmitting(true);
       const updated = await updateRoom(room.id, payload);
+      // Sync amenities
+      await deleteEntityAmenitiesByEntityId(room.id);
+      await Promise.all(
+        selectedAmenityIds.map((amenityId) =>
+          createEntityAmenity(room.id, amenityId),
+        ),
+      );
       setRoom(updated);
+      setAmenities(
+        allAmenities.filter((a) => selectedAmenityIds.includes(a.id)),
+      );
       setEditModalOpen(false);
       setAlert({
         open: true,
@@ -402,6 +433,43 @@ export default function RoomProfile() {
                   {room.description ||
                     "No description available for this room."}
                 </Typography.Body>
+
+                {/* Amenities */}
+                {amenities.length > 0 && (
+                  <Box
+                    sx={{
+                      mt: 2,
+                      pt: 2,
+                      borderTop: "1px solid",
+                      borderColor: `${colors.dark}14`,
+                    }}
+                  >
+                    <Typography.Label
+                      size="xs"
+                      color="default"
+                      sx={{
+                        mb: 1,
+                        display: "block",
+                        textTransform: "uppercase",
+                        letterSpacing: 0.5,
+                      }}
+                    >
+                      Amenities
+                    </Typography.Label>
+                    <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
+                      {amenities.map((a) => (
+                        <Chip
+                          key={a.id}
+                          size="md"
+                          variant="soft"
+                          color="neutral"
+                        >
+                          {a.name}
+                        </Chip>
+                      ))}
+                    </Box>
+                  </Box>
+                )}
               </Container>
 
               {/* Calendar Sidebar */}
@@ -568,6 +636,8 @@ export default function RoomProfile() {
         onSubmit={handleUpdate}
         room={room}
         loading={submitting}
+        allAmenities={allAmenities}
+        initialAmenityIds={amenities.map((a) => a.id)}
       />
 
       {/* Delete Confirmation */}

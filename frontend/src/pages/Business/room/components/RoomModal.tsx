@@ -7,12 +7,14 @@ import {
   Select,
   Option,
   CircularProgress,
+  Chip,
 } from "@mui/joy";
 import { CloudUpload, Image as ImageIcon } from "@mui/icons-material";
 import Typography from "@/components/ui/Typography";
 import Input from "@/components/ui/Input";
 import BaseModal from "@/components/ui/BaseModal";
 import type { Room } from "@/types/Room";
+import type { Amenity } from "@/types/Amenity";
 import { uploadImage } from "@/services/upload/UploadService";
 
 interface RoomFormData {
@@ -50,10 +52,15 @@ const ROOM_TYPES = [
 interface RoomModalProps {
   open: boolean;
   onClose: () => void;
-  onSubmit: (data: Omit<Room, "id">) => Promise<void>;
+  onSubmit: (
+    data: Omit<Room, "id">,
+    selectedAmenityIds: number[],
+  ) => Promise<void>;
   room?: Room | null;
   loading?: boolean;
   businessId?: string;
+  allAmenities?: Amenity[];
+  initialAmenityIds?: number[];
 }
 
 export default function RoomModal({
@@ -63,13 +70,20 @@ export default function RoomModal({
   room,
   loading = false,
   businessId,
+  allAmenities = [],
+  initialAmenityIds = [],
 }: RoomModalProps) {
   const isEditing = !!room;
   const [form, setForm] = useState<RoomFormData>(INITIAL_FORM);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [selectedAmenityIds, setSelectedAmenityIds] = useState<Set<number>>(
+    new Set(),
+  );
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const amenityIdsKey = initialAmenityIds.slice().sort().join(",");
 
   useEffect(() => {
     if (room) {
@@ -89,7 +103,9 @@ export default function RoomModal({
       setImagePreview(null);
     }
     setImageFile(null);
-  }, [room, open]);
+    setSelectedAmenityIds(new Set(initialAmenityIds));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [room, open, amenityIdsKey]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -136,7 +152,7 @@ export default function RoomModal({
       business_id: room?.business_id ?? businessId ?? null,
     };
 
-    await onSubmit(payload);
+    await onSubmit(payload, Array.from(selectedAmenityIds));
   };
 
   return (
@@ -440,6 +456,41 @@ export default function RoomModal({
             sx={{ borderRadius: "8px" }}
           />
         </FormControl>
+
+        {/* Amenities */}
+        {allAmenities.length > 0 && (
+          <FormControl>
+            <FormLabel>
+              <Typography.Label size="sm" color="dark">
+                Amenities
+              </Typography.Label>
+            </FormLabel>
+            <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mt: 0.5 }}>
+              {allAmenities.map((amenity) => {
+                const selected = selectedAmenityIds.has(amenity.id);
+                return (
+                  <Chip
+                    key={amenity.id}
+                    size="md"
+                    variant={selected ? "solid" : "outlined"}
+                    color={selected ? "warning" : "neutral"}
+                    onClick={() => {
+                      setSelectedAmenityIds((prev) => {
+                        const next = new Set(prev);
+                        if (next.has(amenity.id)) next.delete(amenity.id);
+                        else next.add(amenity.id);
+                        return next;
+                      });
+                    }}
+                    sx={{ cursor: "pointer" }}
+                  >
+                    {amenity.name}
+                  </Chip>
+                );
+              })}
+            </Box>
+          </FormControl>
+        )}
       </Box>
     </BaseModal>
   );

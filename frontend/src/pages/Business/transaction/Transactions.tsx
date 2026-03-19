@@ -6,6 +6,7 @@ import Table from "@/components/ui/Table";
 import type { TableColumn } from "@/components/ui/Table";
 import Alert from "@/components/ui/Alert";
 import Loading from "@/components/Loading";
+import NoDataFound from "@/components/ui/NoDataFound";
 import TransactionDetailsModal from "./components/TransactionDetailsModal";
 import { getAllTransactions } from "@/services/transaction/TransactionService";
 import type { Transaction, TransactionStatus } from "@/types/Transaction";
@@ -149,14 +150,22 @@ export default function Transactions() {
       </Box>
 
       {/* Table */}
-      <Table<Transaction>
-        columns={columns}
-        data={transactions}
-        rowKey="id"
-        emptyMessage="No transactions found."
-        onRowClick={(row) => setSelectedTransaction(row)}
-        rowsPerPage={10}
-      />
+      {transactions.length === 0 ? (
+        <NoDataFound
+          icon="inbox"
+          title="No Transactions Yet"
+          size="large"
+          message="Payment records will appear here once transactions are processed."
+        />
+      ) : (
+        <Table<Transaction>
+          columns={columns}
+          data={transactions}
+          rowKey="id"
+          onRowClick={(row) => setSelectedTransaction(row)}
+          rowsPerPage={10}
+        />
+      )}
 
       {/* Transaction Details Modal */}
       <TransactionDetailsModal

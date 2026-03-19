@@ -6,6 +6,7 @@ import Table from "@/components/ui/Table";
 import type { TableColumn } from "@/components/ui/Table";
 import Alert from "@/components/ui/Alert";
 import Loading from "@/components/Loading";
+import NoDataFound from "@/components/ui/NoDataFound";
 import BookingDetailsModal from "./components/BookingDetailsModal";
 import {
   getAllBookings,
@@ -208,14 +209,21 @@ export default function Bookings() {
       </Box>
 
       {/* Table */}
-      <Table<Booking>
-        columns={columns}
-        data={bookings}
-        rowKey="id"
-        emptyMessage="No bookings found."
-        onRowClick={(row) => setSelectedBooking(row)}
-        rowsPerPage={10}
-      />
+      {bookings.length === 0 ? (
+        <NoDataFound
+          icon="inbox"
+          title="No Bookings Yet"
+          message="Guest bookings will appear here once they are made."
+        />
+      ) : (
+        <Table<Booking>
+          columns={columns}
+          data={bookings}
+          rowKey="id"
+          onRowClick={(row) => setSelectedBooking(row)}
+          rowsPerPage={10}
+        />
+      )}
 
       {/* Booking Details Modal */}
       <BookingDetailsModal

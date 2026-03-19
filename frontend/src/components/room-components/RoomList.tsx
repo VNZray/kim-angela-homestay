@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Box, Grid } from "@mui/joy";
+import { useNavigate } from "react-router-dom";
 import RoomCard from "../cards/RoomCard";
 import Typography from "../ui/Typography";
 import Loading from "../Loading";
@@ -27,6 +28,7 @@ export default function RoomList({
   const [rooms, setRooms] = useState<Room[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchRooms = async () => {
@@ -111,8 +113,11 @@ export default function RoomList({
             icon={<People />}
             buttonText={showBookButton ? "Book Now" : "Manage"}
             onClick={() => {
-              // Handle booking or management action
-              console.log("Room action:", room.id);
+              if (showBookButton) {
+                navigate(`/rooms/${room.id}`);
+              } else {
+                console.log("Room action:", room.id);
+              }
             }}
           />
         </Grid>

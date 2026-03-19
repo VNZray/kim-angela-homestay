@@ -64,9 +64,9 @@ const accommodationMenuItems: MenuItem[] = [
     path: `${business}/bookings`,
   },
   {
-    title: "Manage Promotions",
+    title: "Manage Discounts",
     icon: <CampaignIcon />,
-    path: `${business}/promotions`,
+    path: `${business}/discounts`,
   },
   {
     title: "Manage Rooms",

@@ -14,10 +14,15 @@ import RoomProfile from "../pages/Business/room/RoomProfile";
 import Bookings from "../pages/Business/booking/Bookings";
 import Transactions from "../pages/Business/transaction/Transactions";
 import ManageStaff from "../pages/Business/staff/ManageStaff";
+import ManageDiscount from "../pages/Business/discount/ManageDiscount";
 import Home from "../pages/Landing/Home";
 import NotFound from "../pages/NotFound";
 import Unauthorized from "../pages/Unauthorized";
 import Rooms from "../pages/Landing/Rooms";
+import TouristRoomProfile from "../pages/Landing/room/RoomProfile";
+import RoomReviews from "../pages/Landing/room/RoomReviews";
+import Reviews from "../pages/Landing/Reviews";
+import ManageReviews from "../pages/Business/ratings/ManageReviews";
 import AuthLayout from "@/layouts/AuthLayout";
 import ProtectedRoute from "./ProtectedRoute";
 import Loading from "@/components/Loading";
@@ -65,6 +70,9 @@ export default function AppRoutes() {
         >
           <Route index element={<Home />} />
           <Route path="rooms" element={<Rooms />} />
+          <Route path="rooms/:id" element={<TouristRoomProfile />} />
+          <Route path="rooms/:id/reviews" element={<RoomReviews />} />
+          <Route path="reviews" element={<Reviews />} />
           <Route path="services" element={<Services />} />
           <Route path="about" element={<About />} />
         </Route>
@@ -92,10 +100,7 @@ export default function AppRoutes() {
           <Route path="bookings" element={<Bookings />} />
           <Route path="rooms" element={<ManageRooms />} />
           <Route path="rooms/:id" element={<RoomProfile />} />
-          <Route
-            path="promotions"
-            element={<PagePlaceholder title="Manage Promotions" />}
-          />
+          <Route path="discounts" element={<ManageDiscount />} />
           <Route path="staff" element={<ManageStaff />} />
 
           {/* User Management - Admin Only */}
@@ -117,10 +122,7 @@ export default function AppRoutes() {
             element={<PagePlaceholder title="Manage Subscription" />}
           />
 
-          <Route
-            path="reviews"
-            element={<PagePlaceholder title="Manage Reviews" />}
-          />
+          <Route path="reviews" element={<ManageReviews />} />
           <Route
             path="settings"
             element={<PagePlaceholder title="Business Settings" />}
