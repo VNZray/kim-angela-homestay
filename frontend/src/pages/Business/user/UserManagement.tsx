@@ -9,6 +9,7 @@ import type { TableColumn } from "@/components/ui/Table";
 import Alert from "@/components/ui/Alert";
 import BaseModal from "@/components/ui/BaseModal";
 import Loading from "@/components/Loading";
+import UserStatusBadge from "@/components/ui/UserStatusBadge";
 import {
   deleteUser,
   getAllUsers,
@@ -156,15 +157,12 @@ const UserManagement = () => {
     {
       id: "is_online",
       label: "Status",
-      minWidth: 80,
+      minWidth: 140,
       render: (row) => (
-        <Chip
-          size="sm"
-          variant="soft"
-          color={row.is_online ? "success" : "neutral"}
-        >
-          {row.is_online ? "Online" : "Offline"}
-        </Chip>
+        <UserStatusBadge
+          isOnline={row.is_online}
+          lastActiveAt={row.last_active_at}
+        />
       ),
     },
     {

@@ -32,6 +32,7 @@ export async function getOrCreateUserRole(
           display_name: displayName ?? null,
           is_online: true,
           last_login: now,
+          last_active_at: now,
         })
         .select("role")
         .single();
@@ -63,7 +64,7 @@ export async function getOrCreateUserRole(
     // Update online status and last_login for existing users
     await supabase
       .from(USERS_TABLE)
-      .update({ is_online: true, last_login: now })
+      .update({ is_online: true, last_login: now, last_active_at: now })
       .eq("firebase_uid", firebaseUid);
 
     return data.role as UserRole;
@@ -79,7 +80,10 @@ export async function markUserOffline(firebaseUid: string): Promise<void> {
   try {
     await supabase
       .from(USERS_TABLE)
-      .update({ is_online: false })
+      .update({
+        is_online: false,
+        last_active_at: new Date().toISOString(),
+      })
       .eq("firebase_uid", firebaseUid);
   } catch (err) {
     console.error("Error marking user offline:", err);

@@ -1,10 +1,5 @@
-import PageContainer from "@/components/PageContainer";
-import Typography from "@/components/ui/Typography";
+import NotFound from "../NotFound";
 
 export default function About() {
-  return (
-    <PageContainer>
-      <Typography.Title>About</Typography.Title>
-    </PageContainer>
-  );
+  return <NotFound />;
 }

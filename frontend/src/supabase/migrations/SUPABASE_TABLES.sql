@@ -25,7 +25,8 @@ CREATE TABLE IF NOT EXISTS users (
     created_by TIMESTAMPTZ,
     updated_by TIMESTAMPTZ,
     is_online BOOLEAN DEFAULT FALSE,
-    last_login TIMESTAMP
+    last_login TIMESTAMP,
+    last_active_at TIMESTAMPTZ DEFAULT NOW()
 );
 
 -- Index for faster lookups

@@ -22,10 +22,11 @@ import {
 } from "../utils/firebase";
 
 import type { User } from "../types/User";
+import { getOrCreateUserRole } from "../services/auth/AuthService";
 import {
-  getOrCreateUserRole,
-  markUserOffline,
-} from "../services/auth/AuthService";
+  startSessionTracking,
+  setUserOffline,
+} from "../services/auth/SessionService";
 import { createGuestForUser } from "../services/guest/GuestService";
 import { createTouristForUser } from "../services/tourist/TouristService";
 
@@ -81,6 +82,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
           role: role,
         };
         setUser(appUser);
+
+        // Start session tracking (heartbeat + browser close detection)
+        startSessionTracking(firebaseUser.uid);
       } else {
         setUser(null);
       }
@@ -242,7 +246,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     try {
       const currentUid = auth.currentUser?.uid;
       if (currentUid) {
-        await markUserOffline(currentUid);
+        await setUserOffline(currentUid);
       }
       await signOut(auth);
       setUser(null);

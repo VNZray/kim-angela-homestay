@@ -23,4 +23,5 @@ export interface SupabaseUser {
     updated_by: string | null;
     is_online: boolean | null;
     last_login: string | null;
+    last_active_at: string | null;
 }

@@ -18,6 +18,7 @@ import type { TableColumn } from "@/components/ui/Table";
 import Alert from "@/components/ui/Alert";
 import BaseModal from "@/components/ui/BaseModal";
 import Loading from "@/components/Loading";
+import UserStatusBadge from "@/components/ui/UserStatusBadge";
 import {
   getAllUsers,
   updateUserRole,
@@ -151,6 +152,7 @@ export default function ManageStaff() {
         display_name: form.displayName,
         role: form.role,
         is_online: false,
+        last_active_at: new Date().toISOString(),
       });
 
       if (error) throw error;
@@ -269,15 +271,12 @@ export default function ManageStaff() {
     {
       id: "is_online",
       label: "Status",
-      minWidth: 80,
+      minWidth: 140,
       render: (row) => (
-        <Chip
-          size="sm"
-          variant="soft"
-          color={row.is_online ? "success" : "neutral"}
-        >
-          {row.is_online ? "Online" : "Offline"}
-        </Chip>
+        <UserStatusBadge
+          isOnline={row.is_online}
+          lastActiveAt={row.last_active_at}
+        />
       ),
     },
     {
@@ -559,13 +558,10 @@ export default function ManageStaff() {
             <Typography.Label size="sm" bold sx={{ mb: 0.5 }}>
               Status
             </Typography.Label>
-            <Chip
-              size="sm"
-              variant="soft"
-              color={editingStaff?.is_online ? "success" : "neutral"}
-            >
-              {editingStaff?.is_online ? "Online" : "Offline"}
-            </Chip>
+            <UserStatusBadge
+              isOnline={editingStaff?.is_online ?? false}
+              lastActiveAt={editingStaff?.last_active_at ?? null}
+            />
           </Box>
 
           <Box>

@@ -356,9 +356,10 @@ export default function RoomProfile() {
         {statCards.map((stat) => (
           <Container
             key={stat.label}
-            elevation={2}
             align="center"
             direction="row"
+            background="light"
+            variant="outlined"
           >
             <Box
               sx={{
@@ -388,7 +389,7 @@ export default function RoomProfile() {
       </Box>
 
       {/* Tabs */}
-      <Container elevation={2}>
+      <Container background="light" variant="outlined">
         <Tabs
           value={activeTab}
           onChange={(_e, val) => setActiveTab(val as number)}
