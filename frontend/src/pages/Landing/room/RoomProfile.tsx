@@ -28,6 +28,7 @@ import { getColors } from "@/utils/Colors";
 import type { Room } from "@/types/Room";
 import type { Booking } from "@/types/Booking";
 import type { RoomReview } from "@/types/RoomReview";
+import Container from "@/components/Container";
 
 const PLACEHOLDER_IMAGE =
   "https://placehold.co/800x500/e2e8f0/64748b?text=No+Room+Image";
@@ -306,13 +307,14 @@ export default function TouristRoomProfile() {
                 colorScheme="primary"
                 size="lg"
                 sx={{ px: 4 }}
+                onClick={() => navigate(`/rooms/${id}/book`)}
               >
                 Book Now
               </Button>
             </Box>
 
             {/* Description */}
-            <Card colorScheme="light" elevation={2} sx={{ p: 3 }}>
+            <Container variant="outlined">
               <Typography.CardTitle size="sm" color="dark" sx={{ mb: 1.5 }}>
                 About This Room
               </Typography.CardTitle>
@@ -324,7 +326,7 @@ export default function TouristRoomProfile() {
                 {room.description ||
                   "A comfortable and well-appointed room perfect for your stay."}
               </Typography.Body>
-            </Card>
+            </Container>
 
             {/* Room Info Grid */}
             <Box
@@ -338,12 +340,7 @@ export default function TouristRoomProfile() {
               }}
             >
               {infoItems.map((item) => (
-                <Card
-                  key={item.label}
-                  colorScheme="light"
-                  elevation={2}
-                  sx={{ p: 2 }}
-                >
+                <Container variant="outlined">
                   <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
                     <Box
                       sx={{
@@ -369,7 +366,7 @@ export default function TouristRoomProfile() {
                       </Typography.CardTitle>
                     </Box>
                   </Box>
-                </Card>
+                </Container>
               ))}
             </Box>
 
@@ -395,7 +392,7 @@ export default function TouristRoomProfile() {
             }}
           >
             {/* Availability Calendar */}
-            <Card colorScheme="light" elevation={2} sx={{ p: 2 }}>
+            <Container variant="outlined">
               <Typography.CardTitle size="sm" color="dark" sx={{ mb: 1 }}>
                 Availability
               </Typography.CardTitle>
@@ -404,7 +401,7 @@ export default function TouristRoomProfile() {
                 interactive={false}
                 showBlockButton={false}
               />
-            </Card>
+            </Container>
             {/* Review Stats (desktop only) */}
             <Box sx={{ display: { xs: "none", lg: "block" } }}>
               {reviews.length > 0 && (
@@ -437,15 +434,11 @@ export default function TouristRoomProfile() {
 
             {/* Reviews List */}
             {reviews.length === 0 ? (
-              <Card
-                colorScheme="light"
-                elevation={1}
-                sx={{ p: 3, textAlign: "center" }}
-              >
+              <Container variant="outlined">
                 <Typography.Body color="default" size="sm">
                   No reviews yet for this room.
                 </Typography.Body>
-              </Card>
+              </Container>
             ) : (
               <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5 }}>
                 {displayedReviews.map((review) => (

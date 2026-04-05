@@ -29,6 +29,9 @@ import CalendarMonthIcon from "@mui/icons-material/CalendarMonth"; // Bookings
 import CampaignIcon from "@mui/icons-material/Campaign"; // Promotions
 import ReceiptLongIcon from "@mui/icons-material/ReceiptLong"; // Transactions
 import StarIcon from "@mui/icons-material/Star"; // Reviews
+import BugReportIcon from "@mui/icons-material/BugReport"; // Submit Report
+import AssignmentIcon from "@mui/icons-material/Assignment"; // My Tickets
+import TravelExploreIcon from "@mui/icons-material/TravelExplore"; // Itineraries
 
 interface SidebarProps {
   isMobile: boolean;
@@ -74,6 +77,11 @@ const accommodationMenuItems: MenuItem[] = [
     path: `${business}/rooms`,
   },
   {
+    title: "Manage Itineraries",
+    icon: <TravelExploreIcon />,
+    path: `${business}/itineraries`,
+  },
+  {
     title: "Reviews & Ratings",
     icon: <StarIcon />,
     path: `${business}/reviews`,
@@ -88,6 +96,16 @@ const accommodationMenuItems: MenuItem[] = [
     icon: <PersonIcon />,
     path: `${business}/users`,
     requiredRole: "admin", // Only admins can see this
+  },
+  {
+    title: "Submit Report",
+    icon: <BugReportIcon />,
+    path: `${business}/submit-ticket`,
+  },
+  {
+    title: "My Tickets",
+    icon: <AssignmentIcon />,
+    path: `${business}/my-tickets`,
   },
   {
     title: "Settings",

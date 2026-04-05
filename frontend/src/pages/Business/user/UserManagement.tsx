@@ -14,7 +14,11 @@ import {
   deleteUser,
   getAllUsers,
   updateUserRole,
+  subscribeToUserChanges,
+  cleanupStaleSessions,
 } from "@/services/auth/AuthService";
+import supabase from "@/utils/supabase";
+import { useAuth } from "@/context/AuthContext";
 import type { SupabaseUser, UserRole } from "@/types/User";
 
 const ROLE_COLORS: Record<
@@ -25,10 +29,13 @@ const ROLE_COLORS: Record<
   manager: "warning",
   staff: "primary",
   tourist: "success",
+  developer: "success",
 };
 
 const UserManagement = () => {
   const { mode } = useColorScheme();
+  const { user } = useAuth();
+  const isManager = user?.role === "manager";
 
   const [users, setUsers] = useState<SupabaseUser[]>([]);
   const [loading, setLoading] = useState(true);
@@ -67,7 +74,28 @@ const UserManagement = () => {
   };
 
   useEffect(() => {
-    fetchUsers();
+    // Clean up stale sessions first, then fetch so we get accurate statuses
+    cleanupStaleSessions().then(() => fetchUsers());
+
+    // Subscribe to real-time user changes (status, role, etc.)
+    const channel = subscribeToUserChanges(
+      (updatedUser) => {
+        setUsers((prev) =>
+          prev.map((u) => (u.id === updatedUser.id ? updatedUser : u)),
+        );
+      },
+      (deletedRecord) => {
+        setUsers((prev) => prev.filter((u) => u.id !== deletedRecord.id));
+      },
+    );
+
+    // Periodically clean up stale sessions (handles browser crashes, network loss)
+    const cleanupInterval = setInterval(cleanupStaleSessions, 120_000);
+
+    return () => {
+      supabase.removeChannel(channel);
+      clearInterval(cleanupInterval);
+    };
   }, []);
 
   const handleEditRole = (user: SupabaseUser) => {
@@ -168,10 +196,19 @@ const UserManagement = () => {
     {
       id: "last_login",
       label: "Last Login",
-      minWidth: 120,
+      minWidth: 150,
       render: (row) => (
         <Typography.Body size="xs">
-          {row.last_login ? formatDate(row.last_login) : "Never"}
+          {row.last_login
+            ? new Date(row.last_login).toLocaleString("en-US", {
+                year: "numeric",
+                month: "short",
+                day: "numeric",
+                hour: "numeric",
+                minute: "2-digit",
+                hour12: true,
+              })
+            : "Never"}
         </Typography.Body>
       ),
     },
@@ -183,11 +220,18 @@ const UserManagement = () => {
     },
   ];
 
-  const roleCounts = (
-    ["admin", "manager", "staff", "tourist"] as UserRole[]
-  ).map((role) => ({
+  // Managers cannot see admin users
+  const visibleUsers = isManager
+    ? users.filter((u) => u.role !== "admin")
+    : users;
+
+  const visibleRoles: UserRole[] = isManager
+    ? ["manager", "staff", "tourist"]
+    : ["admin", "manager", "staff", "developer", "tourist"];
+
+  const roleCounts = visibleRoles.map((role) => ({
     role,
-    count: users.filter((u) => u.role === role).length,
+    count: visibleUsers.filter((u) => u.role === role).length,
   }));
 
   if (loading) return <Loading fullPage />;
@@ -257,7 +301,7 @@ const UserManagement = () => {
       {/* Users Table */}
       <Table
         columns={columns}
-        data={users}
+        data={visibleUsers}
         rowKey="id"
         onRowClick={handleEditRole}
         emptyMessage="No users found. Users will appear here after they sign up."
@@ -329,7 +373,8 @@ const UserManagement = () => {
               <Option value="tourist">Tourist</Option>
               <Option value="staff">Staff</Option>
               <Option value="manager">Manager</Option>
-              <Option value="admin">Admin</Option>
+              {!isManager && <Option value="developer">Developer</Option>}
+              {!isManager && <Option value="admin">Admin</Option>}
             </Select>
           </Box>
         </Box>

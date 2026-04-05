@@ -168,8 +168,8 @@ const Footer = () => {
                 color="white"
                 sx={{ opacity: 0.8, lineHeight: 1.8 }}
               >
-                Your home away from home in the beautiful island paradise of El
-                Nido, Palawan.
+                Your home away from home in the beautiful island paradise of
+                Caramoan.
               </Typography.Body>
             </Grid>
 

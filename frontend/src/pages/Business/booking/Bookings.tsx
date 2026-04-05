@@ -1,18 +1,18 @@
-import { useState, useEffect, useMemo } from "react";
-import { Box, Chip } from "@mui/joy";
-import PageContainer from "@/components/PageContainer";
-import Typography from "@/components/ui/Typography";
-import Table from "@/components/ui/Table";
-import type { TableColumn } from "@/components/ui/Table";
-import Alert from "@/components/ui/Alert";
 import Loading from "@/components/Loading";
+import PageContainer from "@/components/PageContainer";
+import Alert from "@/components/ui/Alert";
 import NoDataFound from "@/components/ui/NoDataFound";
-import BookingDetailsModal from "./components/BookingDetailsModal";
+import type { TableColumn } from "@/components/ui/Table";
+import Table from "@/components/ui/Table";
+import Typography from "@/components/ui/Typography";
 import {
   getAllBookings,
   updateBooking,
 } from "@/services/booking/BookingService";
 import type { Booking, BookingStatus } from "@/types/Booking";
+import { Box, Chip } from "@mui/joy";
+import { useEffect, useMemo, useState } from "react";
+import BookingDetailsModal from "./components/BookingDetailsModal";
 
 const STATUS_COLOR_MAP: Record<
   string,
@@ -221,7 +221,7 @@ export default function Bookings() {
           data={bookings}
           rowKey="id"
           onRowClick={(row) => setSelectedBooking(row)}
-          rowsPerPage={10}
+          rowsPerPage={15}
         />
       )}
 

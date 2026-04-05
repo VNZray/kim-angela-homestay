@@ -15,6 +15,7 @@ import Bookings from "../pages/Business/booking/Bookings";
 import Transactions from "../pages/Business/transaction/Transactions";
 import ManageStaff from "../pages/Business/staff/ManageStaff";
 import ManageDiscount from "../pages/Business/discount/ManageDiscount";
+import ManageItineraries from "../pages/Business/itinerary/ManageItineraries";
 import Home from "../pages/Landing/Home";
 import NotFound from "../pages/NotFound";
 import Unauthorized from "../pages/Unauthorized";
@@ -26,6 +27,12 @@ import ManageReviews from "../pages/Business/ratings/ManageReviews";
 import AuthLayout from "@/layouts/AuthLayout";
 import ProtectedRoute from "./ProtectedRoute";
 import Loading from "@/components/Loading";
+import DeveloperLayout from "@/layouts/DeveloperLayout";
+import DeveloperTickets from "@/pages/Developer/DeveloperTickets";
+import SubmitTicket from "@/pages/Developer/SubmitTicket";
+import MyTickets from "@/pages/Developer/MyTickets";
+import BookRoom from "@/pages/Landing/booking/BookRoom";
+import MyBookings from "@/pages/Landing/booking/MyBookings";
 
 const PagePlaceholder = ({ title }: { title: string }) => (
   <Box sx={{ p: 2 }}>
@@ -39,6 +46,10 @@ function RedirectNonTourist({ children }: { children: React.ReactElement }) {
 
   if (loading) {
     return <Loading />;
+  }
+
+  if (user && user.role === "developer") {
+    return <Navigate to="/developer" replace />;
   }
 
   if (user && user.role !== "tourist") {
@@ -72,6 +83,8 @@ export default function AppRoutes() {
           <Route path="rooms" element={<Rooms />} />
           <Route path="rooms/:id" element={<TouristRoomProfile />} />
           <Route path="rooms/:id/reviews" element={<RoomReviews />} />
+          <Route path="rooms/:id/book" element={<BookRoom />} />
+          <Route path="my-bookings" element={<MyBookings />} />
           <Route path="reviews" element={<Reviews />} />
           <Route path="services" element={<Services />} />
           <Route path="about" element={<About />} />
@@ -102,6 +115,7 @@ export default function AppRoutes() {
           <Route path="rooms/:id" element={<RoomProfile />} />
           <Route path="discounts" element={<ManageDiscount />} />
           <Route path="staff" element={<ManageStaff />} />
+          <Route path="itineraries" element={<ManageItineraries />} />
 
           {/* User Management - Admin Only */}
           <Route
@@ -123,10 +137,27 @@ export default function AppRoutes() {
           />
 
           <Route path="reviews" element={<ManageReviews />} />
+          <Route path="submit-ticket" element={<SubmitTicket />} />
+          <Route path="my-tickets" element={<MyTickets />} />
           <Route
             path="settings"
             element={<PagePlaceholder title="Business Settings" />}
           />
+        </Route>
+
+        {/* 4. DEVELOPER ROUTES */}
+        <Route
+          path="/developer"
+          element={
+            <ProtectedRoute requiredRole="developer">
+              <DeveloperLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route index element={<DeveloperTickets />} />
+          <Route path="tickets" element={<DeveloperTickets />} />
+          <Route path="bugs" element={<DeveloperTickets />} />
+          <Route path="submit" element={<SubmitTicket />} />
         </Route>
       </Route>
 

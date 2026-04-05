@@ -1,4 +1,4 @@
-export type UserRole = "tourist" | "admin" | "manager" | "staff";
+export type UserRole = "tourist" | "admin" | "manager" | "staff" | "developer";
 
 // App-level authenticated user (Firebase + role)
 export type User = {

@@ -35,13 +35,19 @@ export function startSessionTracking(firebaseUid: string): void {
     // Immediately mark online
     sendHeartbeat(firebaseUid);
 
-    // Periodic heartbeat every minute
+    // Start periodic heartbeat
     heartbeatTimer = setInterval(() => {
         sendHeartbeat(firebaseUid);
     }, HEARTBEAT_INTERVAL_MS);
 
     // Mark offline on tab close / navigate away
     const handleBeforeUnload = () => {
+        // Stop the heartbeat immediately so it can't race with the offline patch
+        if (heartbeatTimer) {
+            clearInterval(heartbeatTimer);
+            heartbeatTimer = null;
+        }
+
         // Use fetch with keepalive for reliable delivery during page unload
         // (sendBeacon doesn't support custom headers needed by Supabase)
         const url = `${import.meta.env.VITE_SUPABASE_URL}/rest/v1/${USERS_TABLE}?firebase_uid=eq.${encodeURIComponent(firebaseUid)}`;
@@ -65,11 +71,23 @@ export function startSessionTracking(firebaseUid: string): void {
     };
 
     // Handle visibility change (tab switched / minimized)
+    // Pause heartbeat when hidden so it doesn't override the offline status
     const handleVisibilityChange = () => {
         if (document.visibilityState === "hidden") {
+            // Stop heartbeat first so it can't race and re-mark the user online
+            if (heartbeatTimer) {
+                clearInterval(heartbeatTimer);
+                heartbeatTimer = null;
+            }
             updatePresence(firebaseUid, false);
         } else if (document.visibilityState === "visible") {
+            // Resume heartbeat and immediately mark online
             sendHeartbeat(firebaseUid);
+            if (!heartbeatTimer) {
+                heartbeatTimer = setInterval(() => {
+                    sendHeartbeat(firebaseUid);
+                }, HEARTBEAT_INTERVAL_MS);
+            }
         }
     };
 

@@ -41,6 +41,8 @@ export default function DashboardLayout() {
         return "warning";
       case "staff":
         return "primary";
+      case "developer":
+        return "success";
       default:
         return "neutral";
     }

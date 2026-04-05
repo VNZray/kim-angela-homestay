@@ -98,6 +98,31 @@ export async function updateTourist(
     return data as Tourist;
 }
 
+export async function getTouristByFirebaseUid(
+    firebaseUid: string,
+): Promise<Tourist | null> {
+    const { data: userRow, error: userError } = await supabase
+        .from(USERS_TABLE)
+        .select("id")
+        .eq("firebase_uid", firebaseUid)
+        .single();
+
+    if (userError || !userRow) return null;
+
+    const { data, error } = await supabase
+        .from(TABLE)
+        .select("*")
+        .eq("user_id", userRow.id)
+        .maybeSingle();
+
+    if (error) {
+        console.error("Error fetching tourist by firebase_uid:", error);
+        return null;
+    }
+
+    return (data as Tourist) ?? null;
+}
+
 export async function deleteTourist(id: string): Promise<void> {
     const { error } = await supabase.from(TABLE).delete().eq("id", id);
     if (error) {

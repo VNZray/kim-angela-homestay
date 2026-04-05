@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS users (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     firebase_uid TEXT UNIQUE NOT NULL,
     email TEXT NOT NULL,
-    role TEXT NOT NULL CHECK (role IN ('tourist', 'admin', 'manager', 'staff')),
+    role TEXT NOT NULL CHECK (role IN ('tourist', 'admin', 'manager', 'staff', 'developer')),
     display_name TEXT,
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW(),
@@ -107,6 +107,19 @@ CREATE TABLE IF NOT EXISTS room (
     business_id UUID REFERENCES business(id)
 );
 
+-- Itinerary packages table: stores owner-editable itineraries per business
+CREATE TABLE IF NOT EXISTS itinerary_package (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    business_id UUID NOT NULL REFERENCES business(id),
+    code TEXT NOT NULL,
+    label TEXT,
+    content TEXT,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_itinerary_business_code ON itinerary_package(business_id, code);
+
 -- Amenity master table (list of amenities that can be attached to rooms or businesses)
 CREATE TABLE IF NOT EXISTS amenity (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -179,6 +192,7 @@ END $$;
 -- Booking table (room bookings for guests)
 CREATE TABLE IF NOT EXISTS booking (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    reference_id TEXT UNIQUE,
     pax SMALLINT NOT NULL,
     num_children SMALLINT NOT NULL DEFAULT 0,
     num_adults SMALLINT NOT NULL DEFAULT 0,
@@ -193,6 +207,8 @@ CREATE TABLE IF NOT EXISTS booking (
     check_out_date DATE NOT NULL,
     check_in_time TIME NOT NULL,
     check_out_time TIME NOT NULL,
+    duration_hours SMALLINT,
+    duration_nights SMALLINT,
     total_price DOUBLE PRECISION NOT NULL,
     balance DOUBLE PRECISION,
     booking_status TEXT NOT NULL DEFAULT 'pending' CHECK (
@@ -201,8 +217,39 @@ CREATE TABLE IF NOT EXISTS booking (
     booking_source TEXT NOT NULL DEFAULT 'online' CHECK (booking_source IN ('online', 'walk-in')),
     room_id UUID NOT NULL REFERENCES room(id),
     business_id UUID NOT NULL REFERENCES business(id),
-    tourist UUID REFERENCES tourist(id)
+    tourist UUID REFERENCES tourist(id),
+    guest_name TEXT,
+    guest_email TEXT,
+    guest_phone TEXT,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+
+-- Booking indexes
+CREATE INDEX IF NOT EXISTS idx_booking_reference_id ON booking(reference_id);
+CREATE INDEX IF NOT EXISTS idx_booking_guest_email ON booking(guest_email);
+CREATE INDEX IF NOT EXISTS idx_booking_room_dates ON booking(room_id, check_in_date, check_out_date);
+
+-- Guest table (individual guests per booking)
+CREATE TABLE IF NOT EXISTS guest (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    guest_name TEXT,
+    classification TEXT NOT NULL DEFAULT 'adult' CHECK (
+        classification IN ('adult', 'minor', 'infant', 'toddler')
+    ),
+    age SMALLINT
+);
+
+-- Booking confirmation join table (links guests to a booking)
+CREATE TABLE IF NOT EXISTS booking_confirmation (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    guest_id UUID NOT NULL REFERENCES guest(id) ON DELETE CASCADE,
+    booking_id UUID NOT NULL REFERENCES booking(id) ON DELETE CASCADE,
+    UNIQUE(guest_id, booking_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_booking_confirmation_booking ON booking_confirmation(booking_id);
+CREATE INDEX IF NOT EXISTS idx_booking_confirmation_guest ON booking_confirmation(guest_id);
 
 -- Transaction table (payments linked to bookings)
 CREATE TABLE IF NOT EXISTS transaction (
@@ -338,6 +385,13 @@ $$ LANGUAGE plpgsql;
 DROP TRIGGER IF EXISTS update_users_updated_at ON users;
 CREATE TRIGGER update_users_updated_at
 BEFORE UPDATE ON users
+FOR EACH ROW
+EXECUTE FUNCTION update_updated_at_column();
+
+-- Trigger to update updated_at on booking table
+DROP TRIGGER IF EXISTS update_booking_updated_at ON booking;
+CREATE TRIGGER update_booking_updated_at
+BEFORE UPDATE ON booking
 FOR EACH ROW
 EXECUTE FUNCTION update_updated_at_column();
 
@@ -519,6 +573,40 @@ BEGIN
         WITH CHECK (true);
     END IF;
 
+    -- Guest table RLS
+    IF EXISTS (
+        SELECT 1 FROM information_schema.tables
+        WHERE table_schema = 'public' AND table_name = 'guest'
+    ) THEN
+        ALTER TABLE guest ENABLE ROW LEVEL SECURITY;
+
+        DROP POLICY IF EXISTS "Allow anon access to guest" ON guest;
+
+        CREATE POLICY "Allow anon access to guest"
+        ON guest
+        FOR ALL
+        TO anon
+        USING (true)
+        WITH CHECK (true);
+    END IF;
+
+    -- Booking confirmation table RLS
+    IF EXISTS (
+        SELECT 1 FROM information_schema.tables
+        WHERE table_schema = 'public' AND table_name = 'booking_confirmation'
+    ) THEN
+        ALTER TABLE booking_confirmation ENABLE ROW LEVEL SECURITY;
+
+        DROP POLICY IF EXISTS "Allow anon access to booking_confirmation" ON booking_confirmation;
+
+        CREATE POLICY "Allow anon access to booking_confirmation"
+        ON booking_confirmation
+        FOR ALL
+        TO anon
+        USING (true)
+        WITH CHECK (true);
+    END IF;
+
     -- Business review table RLS (full access; guarded in frontend by Firebase roles)
     IF EXISTS (
         SELECT 1 FROM information_schema.tables
@@ -583,6 +671,32 @@ BEGIN
         ON room_review_reply
         FOR ALL
         TO anon
+        USING (true)
+        WITH CHECK (true);
+    END IF;
+
+    -- Itinerary table RLS (read-only for anon; authenticated users can manage)
+    IF EXISTS (
+        SELECT 1 FROM information_schema.tables
+        WHERE table_schema = 'public' AND table_name = 'itinerary_package'
+    ) THEN
+        ALTER TABLE itinerary_package ENABLE ROW LEVEL SECURITY;
+
+        DROP POLICY IF EXISTS "Allow anon access to itinerary_package" ON itinerary_package;
+
+        CREATE POLICY "Allow anon access to itinerary_package"
+        ON itinerary_package
+        FOR ALL
+        TO anon
+        USING (true)
+        WITH CHECK (true);
+
+        DROP POLICY IF EXISTS "Allow authenticated access to itinerary_package" ON itinerary_package;
+
+        CREATE POLICY "Allow authenticated access to itinerary_package"
+        ON itinerary_package
+        FOR ALL
+        TO authenticated
         USING (true)
         WITH CHECK (true);
     END IF;

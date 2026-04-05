@@ -405,4 +405,11 @@ function Table<T extends Record<string, any>>({
 // Export components
 export default Table;
 export { GuestAvatar, StatusChip };
+export { default as FilterableTable } from "./FilterableTable";
 export type { GuestAvatarProps, StatusChipProps };
+export type {
+  FilterableTableProps,
+  DropdownFilterConfig,
+  DateFilterConfig,
+  FilterOption,
+} from "./FilterableTable";

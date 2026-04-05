@@ -1,4 +1,5 @@
 import supabase from "@/utils/supabase";
+import type { RealtimeChannel } from "@supabase/supabase-js";
 import type { SupabaseUser, UserRole } from "@/types/User";
 
 const USERS_TABLE = "users";
@@ -125,5 +126,43 @@ export async function deleteUser(userId: string): Promise<void> {
   if (error) {
     console.error("Error deleting user:", error);
     throw error;
+  }
+}
+
+/**
+ * Subscribe to real-time changes on the users table.
+ * Calls `onUpdate` with the updated user row whenever a user's status changes.
+ * Returns the channel so the caller can unsubscribe.
+ */
+export function subscribeToUserChanges(
+  onUpdate: (user: SupabaseUser) => void,
+  onDelete?: (oldRecord: { id: string }) => void,
+): RealtimeChannel {
+  const channel = supabase
+    .channel("users-status")
+    .on(
+      "postgres_changes",
+      { event: "UPDATE", schema: "public", table: USERS_TABLE },
+      (payload) => {
+        onUpdate(payload.new as SupabaseUser);
+      },
+    )
+    .on(
+      "postgres_changes",
+      { event: "DELETE", schema: "public", table: USERS_TABLE },
+      (payload) => {
+        onDelete?.(payload.old as { id: string });
+      },
+    )
+    .subscribe();
+
+  return channel;
+}
+
+/** Call the server-side function to clean up stale online sessions */
+export async function cleanupStaleSessions(): Promise<void> {
+  const { error } = await supabase.rpc("cleanup_stale_sessions");
+  if (error) {
+    console.error("Error cleaning up stale sessions:", error);
   }
 }

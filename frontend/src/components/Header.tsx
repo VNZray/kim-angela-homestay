@@ -176,7 +176,7 @@ const Header = () => {
                     <Person sx={{ mr: 1 }} />
                     My Profile
                   </MenuItem>
-                  <MenuItem onClick={() => navigate("/bookings")}>
+                  <MenuItem onClick={() => navigate("/my-bookings")}>
                     <Settings sx={{ mr: 1 }} />
                     My Bookings
                   </MenuItem>
@@ -330,7 +330,7 @@ const Header = () => {
                     fullWidth
                     variant="outlined"
                     onClick={() => {
-                      navigate("/bookings");
+                      navigate("/my-bookings");
                       setMobileMenuOpen(false);
                     }}
                     sx={{ mb: 1 }}
