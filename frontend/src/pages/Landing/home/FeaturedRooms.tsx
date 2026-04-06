@@ -47,7 +47,7 @@ const FeaturedRooms = () => {
           title="Featured Rooms"
           subtitle="Choose from our carefully designed rooms that suit your needs"
         />
-        <RoomList limit={3} showBookButton={true} />
+        <RoomList limit={3} showBookButton={true} showDateFilter={false} />
         <Box sx={{ textAlign: "center", mt: { xs: 4, md: 6 } }}>
           <Button
             variant="outlined"

@@ -37,7 +37,7 @@ export default function DateSearchFilter({
   };
 
   return (
-    <Container elevation={2} style={{ marginBottom: "20px" }}>
+    <Container style={{ marginBottom: "20px" }}>
       <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2 }}>
         <CalendarDays size={20} style={{ color: colors.primary }} />
         <Typography.CardTitle size="sm" color="dark">
